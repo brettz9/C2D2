@@ -6,7 +6,10 @@ Current Status
 --------------
 All HTML5 Canvas (2D Context) methods and properties are wrapped, as is the Canvas element itself, and convenient 
 (and I daresay more intuitively named) wrapper methods are also available, with the character '$' preceding the method 
-names in such cases (e.g., $line wraps lineTo).
+names in such cases (e.g., $line wraps lineTo, $lineColor wraps strokeStyle, etc.). You can always access the 
+canvas and 2D context methods and properties, with the small difference that everything (besides getter properties 
+and methods which return their own content) can be chained, and that properties are accessible via methods, 
+of the same name, with a no-argument-call being treated as a getter and everything else as a setter. 
 
 There are also some static class methods, Canvas2d.randomNumber, Canvas2d.randomColor, and Canvas2d.getCSSPropertyValue,
 with the latter used for separation of concerns, allowing convenient detection of CSS style rules specified in
