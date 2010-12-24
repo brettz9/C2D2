@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>C2D2</title></head>
+<body>
+<!--
+<canvas id="cnv" width="1000" height="550"></canvas>
+-->
+<script type="text/javascript" src="canvas.js"></script>
+<script type="text/javascript">
+//var strokeStyle = Canvas2DContext(c).strokeStyle("rgb(50,110,210)").strokeStyle(); // Use property name as a function (but without arguments) to get the value
+//var ctx = CanvasContext('cnv'); // default is the first canvas element on the page, so can also be omitted if only one canvas is in use
+
+var ctx = Canvas2d([1000, 450]) // Could also be: {id:'cnv'} as 2nd arg  or {width: 1000, height: 550, id:'cnv', appendTo:document.body}, etc.
+            //.$lineColor('red').lineWidth(5).$shadow({color:'green', blur:2, offset:[5, 10]}).$line([75, 50], [100,75], [100,25])
+            .$shadow({color:'green', blur:2, offset:[5, 10]})
+            .$line({color:'red', width:5, xy:[[75, 50], [100,75], [100,25]]})
+            .$fill({color:'blue', xy:[[175, 150], [200,175], [200,125]]});
+            //.$lineColor('red').lineWidth(5).$shadow({color:'green', blur:2, offset:[5, 10]}).$line('75,50 100,75 100,25')
+            //.$fillColor('blue').$fill([175, 150], [200,175], [200,125]);
+            //.$fillColor('blue').$fill('175, 150 200,175 200,125');
+
+
+//setInterval(function () {
+//ctx.$clear()
+//setTimeout(function () {
+/*            ctx.$shadow({color:'green', blur:2, offset:[5, 10]})
+            .$line({color:'red', width:5, xy:[[75, 50], [100,75], [100,25]]})
+            .$fill({color:'blue', xy:[[175, 150], [200,175], [200,125]]});
+            */
+//}, 500);
+//}, 500);
+
+            
+//alert(ctx.toDataURL());
+//alert(ctx.$imageData(0, 0, 500, 500)); // no need for 'data' property; use regular getImageData if want width/height through this interface
+//ctx.shadowColor('green').shadowBlur(2).$shadowOffset(5, 10)
+</script>
+
+<h1>Now you can easily let your users see 2d too with C2D2!</h1>
+</body>
+</html>

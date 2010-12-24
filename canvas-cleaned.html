@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>C2D2</title></head>
+<body>
+<script type="text/javascript" src="canvas.js"></script>
+<script type="text/javascript">
+
+var ctx = Canvas2d([1000, 450])
+            .$shadow({color:'green', blur:2, offset:[5, 10]})
+            .$line({color:'red', width:5, xy:[[75, 50], [100,75], [100,25]]})
+            .$fill({color:'blue', xy:[[175, 150], [200,175], [200,125]]});
+
+</script>
+<h1>Now you can easily let your users see 2d too with C2D2!</h1>
+</body>
+</html>
