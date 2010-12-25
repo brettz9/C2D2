@@ -23,4 +23,4 @@ commands and the fun experimentation with randomizing colors, and by the chainin
 
 Possible Future Work
 --------------------
-Wrap up some of the child objects of ImageData and LinearGradients, so that these can be wrapped and made chainable.
+Wrap up some of the child objects of ImageData and gradients, so that these can be wrapped and made chainable.
