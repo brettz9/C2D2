@@ -1,57 +1,134 @@
-(function () {
+(function (canvasContextClassName, canvasElementClassName, 
+                    canvasImageDataClassName, canvasGradientClassName, canvasPatternClassName,
+                    canvasPixelArrayClassName) {
 
-function _Canvas2dSetup () {
-    var i, gmethl, methl, propl;
+var w = window, C2D2Element, C2D2Context, C2D2Gradient, C2D2Pattern, C2D2CanvasPixelArray;
+
+var DelegateChain = {
+    addMethods : function (methods, className) {
+        for (var i = 0, methl = methods.length; i < methl; i++) {
+            var m = methods[i];
+            w[className].prototype[m] = (function (m) {return function () {
+                this.parent[m].apply(this.parent, arguments);
+                return this;
+            };}(m));
+        }
+    },
+    addGetterMethods : function (getterMethods, className, wrapperClass) {
+        for (var i = 0, gmethl = getterMethods.length; i < gmethl; i++) {
+            var gm = getterMethods[i];
+            if (wrapperClass) {
+                w[className].prototype[gm] = (function (gm) {return function () {
+                    return new wrapperClass(this.parent[gm].apply(this.parent, arguments));
+                };}(gm));
+            }
+            else { // For those which return a literal
+                w[className].prototype[gm] = (function (gm) {return function () {
+                    return this.parent[gm].apply(this.parent, arguments);
+                };}(gm));
+            }
+        }
+    },
+    addPropertyMethods : function (props, className) {
+        for (var i = 0, propl = props.length; i < propl; i++) {
+        var p = props[i];
+        w[className].prototype[p] = (function (p) {return function (value) {
+            if (typeof value === 'undefined') {
+                return this.parent[p];
+            }
+            this.parent[p] = value;
+            return this;
+        };}(p));
+        }
+    }
+};
+
+function _C2D2CanvasPixelArraySetup () {
+    var props = ['item', 'length']; // We'll ust use this commonly used accessor name
+    //  even though not part of standard interface (not specified)
+    DelegateChain.addPropertyMethods(props, C2D2CanvasPixelArray);
+}
+
+
+C2D2CanvasPixelArray = w[canvasPixelArrayClassName] = function C2D2CanvasPixelArray (canvasPixelArrayObj) {
+    if (!C2D2CanvasPixelArray.prototype.length) {
+        _C2D2CanvasPixelArraySetup();
+    }
+    this.array = this.pixelArray = canvasPixelArrayObj;
+}
+
+function _C2D2ImageDataSetup () {
+    var props = ['width', 'height'], getterMethods = ['data'];
+    DelegateChain.addGetterMethods(getterMethods, canvasImageDataClassName, C2D2CanvasPixelArray);
+    DelegateChain.addPropertyMethods(props, canvasImageDataClassName);
+}
+
+C2D2ImageData = w[canvasImageDataClassName] = function C2D2ImageData (imageDataObj) {
+    if (!C2D2ImageData.prototype.width) {
+        _C2D2ImageDataSetup();
+    }
+    this.parent = this.imageData = imageDataObj;
+}
+
+function _C2D2GradientSetup () {
+    var methods = ['addColorStop'];
+    DelegateChain.addMethods(methods, canvasGradientClassName);
+}
+
+// Partly opaque
+C2D2Gradient = w[canvasGradientClassName] = function C2D2Gradient (gradientObj) {
+    if (!C2D2Gradient.prototype.addColorStop) {
+        _C2D2GradientSetup();
+    }
+    this.parent = this.gradient = gradientObj;
+}
+
+function _C2D2PatternSetup () {
+    // Fully opaque
+}
+
+// Fully opaque
+// If never any benefits to wrapping (with chainable new methods), just avoid making this child class
+C2D2Pattern = w[canvasPatternClassName] = function C2D2Pattern (patternObj) {
+    //if (!C2D2Pattern.prototype.width) { // no known properties/methods
+        _C2D2PatternSetup();
+    //}
+    this.parent = this.pattern = patternObj;
+    return this;
+}
+
+
+function _C2D2ContextSetup () {
     // Predefined methods
     var methods = ['arc','arcTo','beginPath','bezierCurveTo','clearRect',
         'clip','closePath','drawImage','fill','fillRect','fillText','lineTo','moveTo',
         'quadraticCurveTo','rect','restore','rotate','save','scale','setTransform',
         'stroke','strokeRect','strokeText','transform','translate']; // drawFocusRing not currently supported
-
-    // Do not return 'this' object since purpose is to get (and the objects they create don't have more than
-    // one method to make it desirable to chain, except for ImageData ones, moved to childGetterMethods
-
-    // Fix: createPattern is a wholly opaque object, so might need to have child wrappers
-    //    if implementing any known methods in the future
+    DelegateChain.addMethods(methods, canvasContextClassName);
 
     // Fix: Implement these to be wrapped so can get and set data in their own child chains
-    var childGetterMethods = ['createImageData','createLinearGradient',
-        'createRadialGradient', 'getImageData','putImageData'];
-    var getterMethods = ['createPattern','drawFocusRing','isPointInPath','measureText'].concat(childGetterMethods);
+    // Fix: createPattern is a wholly opaque object, so might need to have child wrappers
+    //    if implementing any known methods in the future
+    var imageDataGetterMethods = ['createImageData','getImageData','putImageData'],
+        gradientGetterMethods = ['createLinearGradient', 'createRadialGradient'],
+        patternGetterMethods = ['createPattern'];
+    DelegateChain.addGetterMethods(imageDataGetterMethods, canvasContextClassName, C2D2ImageData);
+    DelegateChain.addGetterMethods(gradientGetterMethods, canvasContextClassName, C2D2Gradient);
+    DelegateChain.addGetterMethods(patternGetterMethods, canvasContextClassName, C2D2Pattern);
+    
+    // Do not return 'this' object since purpose is to get (and the objects they create don't have more than
+    // one method to make it desirable to chain, except for ImageData ones, moved to childGetterMethods
+    var getterMethods = ['drawFocusRing','isPointInPath','measureText'];
+    DelegateChain.addGetterMethods(getterMethods, canvasContextClassName);
 
     // Predefined properties
     var props = ['canvas','fillStyle','font','globalAlpha','globalCompositeOperation',
         'lineCap','lineJoin','lineWidth','miterLimit','shadowOffsetX','shadowOffsetY',
         'shadowBlur','shadowColor','strokeStyle','textAlign','textBaseline'];
-
-    for (i = 0, methl = methods.length; i < methl; i++) {
-        var m = methods[i];
-        Canvas2d.prototype[m] = (function (m) {return function () {
-            this.ctx[m].apply(this.ctx, arguments);
-            return this;
-        };}(m));
-    }
-
-    for (i = 0, gmethl = getterMethods.length; i < gmethl; i++) {
-        var gm = getterMethods[i];
-        Canvas2d.prototype[gm] = (function (gm) {return function () {
-            return this.ctx[gm].apply(this.ctx, arguments);
-        };}(gm));
-    }
-
-    for (i = 0, propl = props.length; i < propl; i++) {
-        var p = props[i];
-        Canvas2d.prototype[p] = (function (p) {return function (value) {
-            if (typeof value === 'undefined') {
-                return this.ctx[p];
-            }
-            this.ctx[p] = value;
-            return this;
-        };}(p));
-    }
+    DelegateChain.addPropertyMethods(props, canvasContextClassName);
 }
 
-function CanvasElement (arr, opts) {
+C2D2Element = w[canvasElementClassName] = function C2D2Element (arr, opts) {
     var d = document, el = opts, parent;
     var noArray = typeof arr !== 'object' || !arr.length;
     if (noArray) {
@@ -103,35 +180,35 @@ function CanvasElement (arr, opts) {
 
 // Could make generic CanvasContext to accept "type" as a property when not '2d'
 
-function Canvas2d (arr, opts) {
-    if (!(this instanceof Canvas2d)) {
-        return new Canvas2d(arr, opts);
+C2D2Context = w[canvasContextClassName] = function C2D2Context (arr, opts) {
+    if (!(this instanceof C2D2Context)) {
+        return new C2D2Context(arr, opts);
     }
     var d = document,
-        el = this.el = this.canvas = CanvasElement(arr, opts);
-    this.context = this.ctx = el.getContext('2d');
-    if (!Canvas2d.prototype.arc) {
-        _Canvas2dSetup(this.ctx);
+        el = this.el = this.canvas = C2D2Element(arr, opts);
+    this.context = this.parent = el.getContext('2d');
+    if (!C2D2Context.prototype.arc) {
+        _C2D2ContextSetup();
     }
-    // Expose the CanvasElement properties
+    // Expose the C2D2Element properties
     this.width = this.el.width;
     this.height = this.el.height;
     return this; // Satisfy Netbeans
 }
-// Expose the CanvasElement methods
-Canvas2d.prototype.getContext = function () {
+// Expose the C2D2Element methods
+C2D2Context.prototype.getContext = function () {
     return this.el.getContext.apply(this.el, arguments);
 };
-Canvas2d.prototype.toDataURL = function () {
+C2D2Context.prototype.toDataURL = function () {
     return this.el.toDataURL.apply(this.el, arguments);
 };
 
 
-Canvas2d.addMethods = function (methodMap) {
+C2D2Context.addMethods = function (methodMap) {
     for (var m in methodMap) {
         if (methodMap.hasOwnProperty(m)) {
             var method = methodMap[m]; // Fix: Automate adding of '$' to the method?
-            Canvas2d.prototype[m] = (function (method) {return function () {
+            C2D2Context.prototype[m] = (function (method) {return function () {
                 method.apply(this, arguments);
                 return this;
             };}(method));
@@ -141,10 +218,10 @@ Canvas2d.addMethods = function (methodMap) {
 
 
 // Unlike addMethods, requires manually supplying 'this' at the end
-Canvas2d.extend = function (obj) { // Keeps constructor property in tact
+C2D2Context.extend = function (obj) { // Keeps constructor property in tact
     for (var p in obj) {
         if (obj.hasOwnProperty(p)) {
-            Canvas2d.prototype[p] = obj[p];
+            C2D2Context.prototype[p] = obj[p];
         }
     }
 };
@@ -169,7 +246,7 @@ function _arrayify (begin) {
 }
 
 // EXTENSIONS
-Canvas2d.addMethods({
+C2D2Context.addMethods({
     $line: function (obj) {
         var a;
         if (obj && typeof obj === 'object' && !obj.length) {
@@ -205,7 +282,7 @@ Canvas2d.addMethods({
             a = _arrayify.apply(null, (obj.coords || obj.xy || obj.path));
         }
         else {
-            var a = _arrayify.apply(null, arguments);
+            a = _arrayify.apply(null, arguments);
         }
         this.beginPath().moveTo.apply(this, a[0]);
         for (var i=1, argl=a.length; i < argl; i++) {
@@ -221,22 +298,22 @@ Canvas2d.addMethods({
         this.clearRect(a, b, c, d);
     }
 });
-Canvas2d.extend({ // Don't auto-return 'this' object for these
+C2D2Context.extend({ // Don't auto-return 'this' object for these
     $shadowColor : function (value) {
         if (value == 'random') {
-            value = Canvas2d.randomColor();
+            value = C2D2Context.randomColor();
         }
         return this.shadowColor(value);
     },
     $fillColor : function (value) { // getter or setter
         if (value == 'random') {
-            value = Canvas2d.randomColor();
+            value = C2D2Context.randomColor();
         }
         return this.fillStyle(value);
     },
     $lineColor : function (value) { // getter or setter
         if (value == 'random') {
-            value = Canvas2d.randomColor();
+            value = C2D2Context.randomColor();
         }
         return this.strokeStyle(value);
     },
@@ -295,28 +372,28 @@ Canvas2d.extend({ // Don't auto-return 'this' object for these
 });
 
 
-Canvas2d.randomNumber = function (min, max) {
+C2D2Context.randomNumber = function (min, max) {
     min = min || 0;
     max = max || 1;
     return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
 // See also the individual methods which use this (allowing "random" as a "color" argument)
-Canvas2d.randomColor = function (r, g, b, rmax, gmax, bmax) {
+C2D2Context.randomColor = function (r, g, b, rmax, gmax, bmax) {
     r = r || 0;
     g = g || 0;
     b = b || 0;
     rmax = rmax || 255;
     gmax = gmax || 255;
     bmax = bmax || 255;
-    var red = Canvas2d.randomNumber(r, rmax);
-    var green = Canvas2d.randomNumber(g, gmax);
-    var blue = Canvas2d.randomNumber(b, bmax);
+    var red = C2D2Context.randomNumber(r, rmax);
+    var green = C2D2Context.randomNumber(g, gmax);
+    var blue = C2D2Context.randomNumber(b, bmax);
     return 'rgb('+red+','+green+','+blue+')';
 };
 // Useful for separation of concerns, detecting the CSS style rule for a given class, id, or other selector and applying it as an argument to a canvas method,
 // so that the JavaScript does not need to be concerned with secondary styling (of course the images it generates is a kind of style)
-Canvas2d.getCSSPropertyValue = function (selectorText, propertyName, sheet) {
+C2D2Context.getCSSPropertyValue = function (selectorText, propertyName, sheet) {
     var i = 0, j = 0, dsl = 0, crl = 0, ss,
         _getPropertyFromStyleSheet =
             function (ss, selectorText, propertyName) {
@@ -354,10 +431,8 @@ Canvas2d.getCSSPropertyValue = function (selectorText, propertyName, sheet) {
     return value;
 };
 
-
-
-// EXPORTS
-this.Canvas2d = Canvas2d;
-this.CanvasElement = CanvasElement; // Only needed externally for those who wish to insist
-                                                                            // on a distinction between the element and the context
-}());
+/*
+Exports the following as globals (though only "Canvas2d" is really needed); 
+    the name of the class to create may be altered here
+*/
+}('Canvas2d', 'CanvasElement', 'C2D2ImageData', 'C2D2Gradient', 'C2D2Pattern', 'C2D2CanvasPixelArray'));
