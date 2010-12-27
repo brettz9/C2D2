@@ -4,6 +4,9 @@
 
 var w = window, C2D2Element, C2D2Context, C2D2Gradient, C2D2Pattern, C2D2CanvasPixelArray;
 
+// Fix: Wrap up any specific methods or properties which might be used on the opaque pattern and
+//     gradient child objects, if ever exposed, so that these can be properly wrapped and made chainable.
+
 var DelegateChain = {
     addMethods : function (methods, className) {
         for (var i = 0, methl = methods.length; i < methl; i++) {
@@ -91,10 +94,10 @@ function _C2D2PatternSetup () {
 // If never any benefits to wrapping (with chainable new methods), just avoid making this child class
 C2D2Pattern = w[canvasPatternClassName] = function C2D2Pattern (patternObj) {
     //if (!C2D2Pattern.prototype.width) { // no known properties/methods
-        _C2D2PatternSetup();
+    // _C2D2PatternSetup();
     //}
     this.parent = this.pattern = patternObj;
-    return this;
+    return patternObj; // Just return the object for now, as appears there will be no need to wrap
 }
 
 

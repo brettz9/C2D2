@@ -23,7 +23,3 @@ commands and the fun experimentation with randomizing colors, and by the chainin
 By inclusion of a conditional script tag, ExplorerCanvas, C2D2 can also work on Internet Explorer (see one of 
 the sample HTML files), though with limited support in some areas. See http://code.google.com/p/explorercanvas/ 
 for details.
-
-Possible Future Work
---------------------
-Wrap up some of the child objects of ImageData and gradients, so that these can be wrapped and made chainable.
