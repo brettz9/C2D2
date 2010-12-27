@@ -20,6 +20,9 @@ libraries out there (i.e., lower level than say building charts and specific obj
 one available. This was most recently motivated by nostalgia for the simplicity of HIRES and LORES Apple Basic
 commands and the fun experimentation with randomizing colors, and by the chaining popularized by jQuery.
 
+By inclusion of a conditional script tag, ExplorerCanvas, C2D2 can also work on Internet Explorer (see one of 
+the sample HTML files), though with limited support in some areas. See http://code.google.com/p/explorercanvas/ 
+for details.
 
 Possible Future Work
 --------------------

@@ -95,6 +95,9 @@ function CanvasElement (arr, opts) {
     if (parent) {
         parent.appendChild(el);
     }
+    if (window.G_vmlCanvasManager) { // If using ExplorerCanvas to get IE support: http://code.google.com/p/explorercanvas/
+        el = G_vmlCanvasManager.initElement(el);
+    }
     return el;
 }
 
