@@ -1,4 +1,4 @@
-(function (canvasContextClassName, canvasElementClassName, 
+(function (canvasContextClassName, canvasElementClassName,
                     canvasImageDataClassName, canvasGradientClassName, canvasPatternClassName,
                     canvasPixelArrayClassName) {
 
@@ -17,11 +17,17 @@ var DelegateChain = {
             };}(m));
         }
     },
-    addGetterMethods : function (getterMethods, className, wrapperClass) {
+    addGetterMethods : function (getterMethods, className, wrapperClass, methodFromProperty) {
         for (var i = 0, gmethl = getterMethods.length; i < gmethl; i++) {
             var gm = getterMethods[i];
             if (wrapperClass) {
                 w[className].prototype[gm] = (function (gm) {return function () {
+                    if (gm === 'putImageData' && typeof arguments[0] === 'object' && arguments[0].imageData) { // Fix: Hackish check for taking regular ImageData object
+                        arguments[0] = arguments[0].imageData;
+                    }
+                    if (methodFromProperty) {
+                        return new wrapperClass(this.parent[gm]);
+                    }
                     return new wrapperClass(this.parent[gm].apply(this.parent, arguments));
                 };}(gm));
             }
@@ -34,22 +40,29 @@ var DelegateChain = {
     },
     addPropertyMethods : function (props, className) {
         for (var i = 0, propl = props.length; i < propl; i++) {
-        var p = props[i];
-        w[className].prototype[p] = (function (p) {return function (value) {
-            if (typeof value === 'undefined') {
-                return this.parent[p];
-            }
-            this.parent[p] = value;
-            return this;
-        };}(p));
+            var p = props[i];
+            w[className].prototype[p] = (function (p) {return function (value) {
+                if (typeof value === 'undefined') {
+                    return this.parent[p];
+                }
+                this.parent[p] = value;
+                return this;
+            };}(p));
         }
     }
 };
 
 function _C2D2CanvasPixelArraySetup () {
-    var props = ['item', 'length']; // We'll ust use this commonly used accessor name
+    var props = ['length']; // We'll ust use this commonly used accessor name
+    w[canvasPixelArrayClassName].prototype['item'] = function (value, value2) {
+        if (typeof value2 === 'undefined') {
+            return this.parent[value];
+        }
+        this.parent[value] = value2;
+        return this;
+    };
     //  even though not part of standard interface (not specified)
-    DelegateChain.addPropertyMethods(props, C2D2CanvasPixelArray);
+    DelegateChain.addPropertyMethods(props, canvasPixelArrayClassName);
 }
 
 
@@ -57,12 +70,12 @@ C2D2CanvasPixelArray = w[canvasPixelArrayClassName] = function C2D2CanvasPixelAr
     if (!C2D2CanvasPixelArray.prototype.length) {
         _C2D2CanvasPixelArraySetup();
     }
-    this.array = this.pixelArray = canvasPixelArrayObj;
+    this.parent = this.array = this.pixelArray = canvasPixelArrayObj;
 }
 
 function _C2D2ImageDataSetup () {
     var props = ['width', 'height'], getterMethods = ['data'];
-    DelegateChain.addGetterMethods(getterMethods, canvasImageDataClassName, C2D2CanvasPixelArray);
+    DelegateChain.addGetterMethods(getterMethods, canvasImageDataClassName, C2D2CanvasPixelArray, true);
     DelegateChain.addPropertyMethods(props, canvasImageDataClassName);
 }
 
@@ -118,7 +131,7 @@ function _C2D2ContextSetup () {
     DelegateChain.addGetterMethods(imageDataGetterMethods, canvasContextClassName, C2D2ImageData);
     DelegateChain.addGetterMethods(gradientGetterMethods, canvasContextClassName, C2D2Gradient);
     DelegateChain.addGetterMethods(patternGetterMethods, canvasContextClassName, C2D2Pattern);
-    
+
     // Do not return 'this' object since purpose is to get (and the objects they create don't have more than
     // one method to make it desirable to chain, except for ImageData ones, moved to childGetterMethods
     var getterMethods = ['drawFocusRing','isPointInPath','measureText'];
@@ -240,7 +253,7 @@ function _arrayify (begin) {
     if (typeof begin === 'string') {
         args = [];
         var coords = begin.replace(/^\s*(.*?)\s*$/, '$1').replace(/\s*,\s+/g, ',').split(/\s+/);
-        
+
         _forEach(coords, function (item, idx) {
             args[idx] = item.split(',');
         });
@@ -435,7 +448,7 @@ C2D2Context.getCSSPropertyValue = function (selectorText, propertyName, sheet) {
 };
 
 /*
-Exports the following as globals (though only "Canvas2d" is really needed); 
+Exports the following as globals (though only "Canvas2d" is really needed);
     the name of the class to create may be altered here
 */
 }('Canvas2d', 'CanvasElement', 'C2D2ImageData', 'C2D2Gradient', 'C2D2Pattern', 'C2D2CanvasPixelArray'));
