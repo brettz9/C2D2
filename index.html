@@ -1,0 +1,27 @@
+<h2>CD2D</h2>
+
+<p>C2D2 (See 2D Too) is a light-weight wrapper for HTML5 Canvas, providing jQuery-style chaining in a light package.</p>
+
+<h2>Usage</h2>
+<p>Creating a context (and a canvas element if not yet created):</p>
+<script src="https://gist.github.com/886440.js?file=C2D2_Creating_Context.js"></script>
+
+<p>Getters (vs. Setters):</p>
+<script src="https://gist.github.com/886446.js?file=C2D2_Getter_Usage.js"></script>
+
+<p>Comparison of direct canvas wrappers to C2D2's custom utility methods:</p>
+<script src="https://gist.github.com/886450.js?file=C2D2_Canvas_Wrapping_or_Utilities.js"></script>
+
+<p>Chaining:</p>
+<script src="https://gist.github.com/886447.js?file=C2D2_Chaining.js"></script>
+
+
+<h2>Current Status</h2>
+
+<p>All HTML5 Canvas (2D Context) methods and properties are wrapped, as is the Canvas element itself, and convenient (hopefully more intuitively named) wrapper methods are also available, with the character '$' preceding the method names in the case of such utilities (e.g., $line wraps lineTo, $lineColor wraps strokeStyle, etc.). You can always access the canvas and 2D context methods and properties, with the small difference that everything (besides getter properties and methods which return their own content) can be chained, and that properties are accessible via methods, of the same name, with a no-argument-call being treated as a getter and everything else as a setter.</p>
+
+<p>There are also a few static class methods, Canvas2d.randomNumber, Canvas2d.randomColor, and Canvas2d.getCSSPropertyValue, with the latter used for separation of concerns, allowing convenient detection of CSS style rules specified in stylesheets and applying them as arguments to canvas methods.</p>
+
+<p>Although this is definitely a work in progress, since I saw no other low-level canvas  libraries out there (i.e., lower level than say building charts and specific objects), I thought I'd make this one available. This was most recently motivated by nostalgia for the simplicity of HIRES and LORES Apple Basic commands and the fun experimentation with randomizing colors, and by the chaining popularized by jQuery.</p>
+
+<p>By inclusion of a conditional script tag, ExplorerCanvas, C2D2 can also work on Internet Explorer (see one of the sample HTML files), though with limited support in some areas. See http://code.google.com/p/explorercanvas/ for details.</p>
