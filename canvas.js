@@ -161,11 +161,11 @@ C2D2Element = w[canvasElementClassName] = function C2D2Element (arr, opts) {
     else if (typeof opts === 'object' && !opts.nodeName) {
         el = (d.createElementNS && d.documentElement.namespaceURI !== null) ?
                     d.createElementNS('http://www.w3.org/1999/xhtml', 'canvas') : d.createElement('canvas');
-        if (opts.width) {
-            el.setAttribute('width', opts.width);
+        if (opts.width || opts.w) {
+            el.setAttribute('width', opts.width || opts.w);
         }
-        if (opts.height) {
-            el.setAttribute('height', opts.height);
+        if (opts.height || opts.h) {
+            el.setAttribute('height', opts.height || opts.h);
         }
         if (opts.id) {
             el.setAttribute('id', opts.id);
@@ -269,8 +269,8 @@ C2D2Context.addMethods({
             if (obj.color) {
                 this.$lineColor(obj.color);
             }
-            if (obj.width) {
-                this.lineWidth(obj.width);
+            if (obj.width || obj.w) {
+                this.lineWidth(obj.width || obj.w);
             }
             if (obj.shadow || obj.$shadow) {
                 this.$shadow(obj.shadow);
