@@ -309,38 +309,80 @@ C2D2Context.addMethods({
         }
         this.fill();
     },
-    $clear: function (x, y, w, h) {
-        this.$clearRect(x, y, w, h);
+    $clear: function () {
+        this.$clearRect.apply(this, arguments);
     },
     $fillRect : function (x, y, w, h) {
+        if (x && typeof x === 'object' && x.length) {
+            for (var i=0, argl = arguments.length; i < argl; i++) {
+                this.$fillRect.apply(this, arguments[i]); // Allow array for coordinates
+            }
+            return this;
+        }
         x = x || 0;
         y = y || 0;
         w = w || this.width;
         h = h || this.height;
-        if (x && typeof x === 'object' && x.length) {
-            this.fillRect.apply(this, x); // Allow array for coordinates
-        }
         this.fillRect(x, y, w, h);
     },
     $clearRect : function (x, y, w, h) {
+        if (x && typeof x === 'object' && x.length) {
+            for (var i=0, argl = arguments.length; i < argl; i++) {
+                this.$clearRect.apply(this, arguments[i]); // Allow array for coordinates
+            }
+            return this;
+        }
         x = x || 0;
         y = y || 0;
         w = w || this.width;
         h = h || this.height;
-        if (x && typeof x === 'object' && x.length) {
-            this.clearRect.apply(this, x); // Allow array for coordinates
-        }
         this.clearRect(x, y, w, h);
     },
     $strokeRect : function (x, y, w, h) {
+        if (x && typeof x === 'object' && x.length) {
+            for (var i=0, argl = arguments.length; i < argl; i++) {
+                this.$strokeRect.apply(this, arguments[i]); // Allow array for coordinates
+            }
+            return this;
+        }
         x = x || 0;
         y = y || 0;
         w = w || this.width;
         h = h || this.height;
-        if (x && typeof x === 'object' && x.length) {
-            this.strokeRect.apply(this, x); // Allow array for coordinates
-        }
         this.strokeRect(x, y, w, h);
+    },
+    $arc : function (x, y, radius, startAngle, endAngle, anticlockwise) {
+        if (x && typeof x === 'object' && x.length) {
+            for (var i=0, argl = arguments.length; i < argl; i++) {
+                this.$arc.apply(this, arguments[i]); // Allow array for coordinates
+            }
+            return this;
+        }
+        this.arc(x, y, radius, startAngle, endAngle, anticlockwise);
+    },
+    $quadraticCurve : function () {
+        this.$quadratic.apply(this, arguments);
+    },
+    $quadratic : function (cp1x, cp1y, x, y) {
+        if (cp1x && typeof cp1x === 'object' && cp1x.length) {
+            for (var i=0, argl = arguments.length; i < argl; i++) {
+                this.$quadratic.apply(this, arguments[i]); // Allow array for coordinates
+            }
+            return this;
+        }
+        this.quadraticCurveTo(cp1x, cp1y, x, y);
+    },
+    $bezierCurve : function () {
+        this.$bezier.apply(this, arguments);
+    },
+    $bezier : function (cp1x, cp1y, cp2x, cp2y, x, y) {
+        if (cp1x && typeof cp1x === 'object' && cp1x.length) {
+            for (var i=0, argl = arguments.length; i < argl; i++) {
+                this.$bezier.apply(this, arguments[i]); // Allow array for coordinates
+            }
+            return this;
+        }
+        this.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
     }
 });
 C2D2Context.extend({ // Don't auto-return 'this' object for these
