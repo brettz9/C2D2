@@ -306,12 +306,38 @@ C2D2Context.addMethods({
         }
         this.fill();
     },
-    $clear: function (a, b, c, d) {
-        a = a || 0;
-        b = b || 0;
-        c = c || this.width;
-        d = d || this.height;
-        this.clearRect(a, b, c, d);
+    $clear: function (x, y, w, h) {
+        this.$clearRect(x, y, w, h);
+    },
+    $fillRect : function (x, y, w, h) {
+        x = x || 0;
+        y = y || 0;
+        w = w || this.width;
+        h = h || this.height;
+        if (x && typeof x === 'object' && x.length) {
+            this.fillRect.apply(this, x); // Allow array for coordinates
+        }
+        this.fillRect(x, y, w, h);
+    },
+    $clearRect : function (x, y, w, h) {
+        x = x || 0;
+        y = y || 0;
+        w = w || this.width;
+        h = h || this.height;
+        if (x && typeof x === 'object' && x.length) {
+            this.clearRect.apply(this, x); // Allow array for coordinates
+        }
+        this.clearRect(x, y, w, h);
+    },
+    $strokeRect : function (x, y, w, h) {
+        x = x || 0;
+        y = y || 0;
+        w = w || this.width;
+        h = h || this.height;
+        if (x && typeof x === 'object' && x.length) {
+            this.strokeRect.apply(this, x); // Allow array for coordinates
+        }
+        this.strokeRect(x, y, w, h);
     }
 });
 C2D2Context.extend({ // Don't auto-return 'this' object for these
