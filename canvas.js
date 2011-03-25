@@ -263,7 +263,7 @@ function _arrayify (begin) {
 
 // EXTENSIONS
 C2D2Context.addMethods({
-    $line: function (obj) {
+    $line: function (obj, close) {
         var a;
         if (obj && typeof obj === 'object' && !obj.length) {
             if (obj.color) {
@@ -283,6 +283,9 @@ C2D2Context.addMethods({
         this.beginPath().moveTo.apply(this, a[0]);
         for (var i=1, argl = a.length; i < argl; i++) {
             this.lineTo.apply(this, a[i]);
+        }
+        if (close || obj.close) {
+            this.closePath();
         }
         this.stroke();
     },
