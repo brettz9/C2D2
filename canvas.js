@@ -148,7 +148,7 @@ C2D2Element = w[canvasElementClassName] = function C2D2Element (arr, opts) {
     var d = document, el = opts, parent;
     var noArray = typeof arr !== 'object' || !arr.length;
     if (noArray) {
-        opts = arr;
+        el = opts = arr;
         arr = null;
     }
     else {
