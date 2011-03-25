@@ -284,7 +284,7 @@ C2D2Context.addMethods({
         for (var i=1, argl = a.length; i < argl; i++) {
             this.lineTo.apply(this, a[i]);
         }
-        this.closePath().stroke();
+        this.stroke();
     },
     $fill: function (obj) {
         var a;
