@@ -170,6 +170,12 @@ C2D2Element = w[canvasElementClassName] = function C2D2Element (arr, opts) {
         if (opts.id) {
             el.setAttribute('id', opts.id);
         }
+        if (opts.style) { // Better to use a class instead
+            el.setAttribute('style', opts.style);
+        }
+        if (opts.innerHTML) { // For fallback display
+            el.innerHTML = opts.innerHTML;
+        }
         if (opts['class'] || opts.className) {
             el.setAttribute('class', opts['class'] || opts.className);
         }
@@ -338,6 +344,9 @@ C2D2Context.addMethods({
         h = h || this.height;
         this.clearRect(x, y, w, h);
     },
+    
+    // $rect, $clip, $arcTo
+    
     $strokeRect : function (x, y, w, h) {
         if (x && typeof x === 'object' && x.length) {
             for (var i=0, argl = arguments.length; i < argl; i++) {
@@ -363,6 +372,9 @@ C2D2Context.addMethods({
     $quadraticCurve : function () {
         this.$quadratic.apply(this, arguments);
     },
+    $quadraticCurveTo : function () {
+        this.$quadratic.apply(this, arguments);
+    },
     $quadratic : function (cp1x, cp1y, x, y) {
         if (cp1x && typeof cp1x === 'object' && cp1x.length) {
             for (var i=0, argl = arguments.length; i < argl; i++) {
@@ -373,6 +385,9 @@ C2D2Context.addMethods({
         this.quadraticCurveTo(cp1x, cp1y, x, y);
     },
     $bezierCurve : function () {
+        this.$bezier.apply(this, arguments);
+    },
+    $bezierCurveTo : function () {
         this.$bezier.apply(this, arguments);
     },
     $bezier : function (cp1x, cp1y, cp2x, cp2y, x, y) {
