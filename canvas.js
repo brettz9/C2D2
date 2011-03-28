@@ -3,7 +3,7 @@
                     canvasPixelArrayClassName) {
 
 //add nodejs support, and exports interface to modules that require this module
-var w = typeof(window) !== "undefined" ? window : exports, C2D2Element, C2D2Context, C2D2Gradient, C2D2Pattern, C2D2CanvasPixelArray;
+var w = typeof window !== "undefined" ? window : exports, C2D2Element, C2D2Context, C2D2Gradient, C2D2Pattern, C2D2CanvasPixelArray;
 
 // Fix: Wrap up any specific methods or properties which might be used on the opaque pattern and
 //     gradient child objects, if ever exposed, so that these can be properly wrapped and made chainable.
@@ -147,7 +147,7 @@ function _C2D2ContextSetup () {
 
 C2D2Element = w[canvasElementClassName] = function C2D2Element (arr, opts) {
 
-    var d = typeof(document)!=="undefined"? document : {}, el = opts, parent;
+    var d = typeof document !== 'undefined' ? document : {}, el = opts,  parent ,  bNodeModule = typeof exports !== 'undefined', canvas, fs, out, stream ;
     var noArray = typeof arr !== 'object' || !arr.length;
     if (noArray) {
         el = opts = arr;
@@ -157,15 +157,11 @@ C2D2Element = w[canvasElementClassName] = function C2D2Element (arr, opts) {
         opts = opts || {};
     }
 
-    //opts can be node canvas
-    el=opts;
-
 // Fix: deal with string w/h coords, number w/h coords
     if (typeof opts === 'string') {
         el = d.getElementById(opts);
     }
-
-    else if (typeof opts === 'object' && !opts.nodeName && !opts.getContext) {
+    else if (typeof opts === 'object' && !opts.nodeName && !bNodeModule) {
 
         el = (d.createElementNS && d.documentElement.namespaceURI !== null) ?
                     d.createElementNS('http://www.w3.org/1999/xhtml', 'canvas') : d.createElement('canvas');
@@ -191,6 +187,29 @@ C2D2Element = w[canvasElementClassName] = function C2D2Element (arr, opts) {
                 d.getElementById(opts.appendTo) :
                 opts.appendTo :
                 d.body;
+    }
+    else if (typeof opts === 'object' && bNodeModule) {
+        canvas=require('canvas');
+        el=new canvas();
+        if (opts.width || opts.w) {
+            el.width = opts.width || opts.w;
+        }
+        if (opts.height || opts.h) {
+            el.height = opts.height || opts.h;
+        }
+        if (opts.fileStream) {
+             fs = require("fs");
+
+             out = fs.createWriteStream(opts.fileStream) , stream = el.createPNGStream();
+
+             stream.on('data', function (chunk) {
+                 out.write(chunk);
+             });
+
+             stream.on('end', function () {
+                 out.end();
+             });
+        }
     }
     else if (typeof opts === 'undefined') {
         el = d.getElementsByTagName('canvas')[0];
