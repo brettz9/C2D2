@@ -309,6 +309,9 @@ C2D2Context.addMethods({
         else {
             a = _arrayify.apply(null, arguments);
         }
+        if (a[0].length === 4) {
+            return this.$fillRect.apply(this, a);
+        }
         this.beginPath().moveTo.apply(this, a[0]);
         for (var i=1, argl=a.length; i < argl; i++) {
             this.lineTo.apply(this, a[i]);
