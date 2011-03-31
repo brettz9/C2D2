@@ -165,7 +165,7 @@ C2D2Element = w[canvasElementClassName] = function C2D2Element (arr, opts) {
     }
     else if (typeof opts === 'object' && bNodeModule) {
         canvas = require('canvas');
-        el = new canvas();
+        el = new Canvas();
         width = arr[0] || opts.width || opts.w;
         height = arr[1] || opts.height || opts.h;
         if (width) {
