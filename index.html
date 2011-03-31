@@ -50,7 +50,8 @@
 
 <h3>Including the file(s)</h3>
 
-<p>The first file (explorercanvas) is conditionally included for compatibility with IE versions &lt; 9</p>
+<p>The first file (also repackaged into C2D2 for convenience), explorercanvas, is conditionally included for compatibility with IE versions &lt; 9, though with limited support in some areas. See <a href="http://code.google.com/p/explorercanvas/">explorercanvas</a> for details.</p>
+
 <script src="https://gist.github.com/897082.js?file=C2D2.html"></script>
 
 <h3>Creating a context (and a canvas element if not yet created):</h3>
@@ -71,13 +72,11 @@
 
 <h2>Current Status</h2>
 
-<p>All HTML5 Canvas (2D Context) methods and properties are wrapped, as is the Canvas element itself, and convenient (hopefully more intuitively named) wrapper methods are also available, with the character '$' preceding the method names in the case of such utilities (e.g., $line wraps lineTo, $lineColor wraps strokeStyle, etc.). You can always access the canvas and 2D context methods and properties, with the small difference that everything (besides getter properties and methods which return their own content) can be chained, and that properties are accessible via methods, of the same name, with a no-argument-call being treated as a getter and everything else as a setter.</p>
+<p>All HTML5 Canvas (2D Context) methods and properties are wrapped, as is the Canvas element itself, and convenient (hopefully more intuitively named) wrapper methods are also available, with the character '$' preceding the method names in the case of such utilities (e.g., $line wraps lineTo, $lineColor wraps strokeStyle, etc.). You can always access the canvas and 2D context methods and properties, with the small difference that everything (besides getter properties and methods which are designed to return their own special content) can be chained, and that properties are accessible via methods, of the same name, with a no-argument-call being treated as a getter and everything else as a setter.</p>
 
-<p>There are also a few static class methods, C2D2.randomNumber, C2D2.randomColor, and C2D2.getCSSPropertyValue, with the latter used for separation of concerns, allowing convenient detection of CSS style rules specified in stylesheets and applying them as arguments to canvas methods.</p>
+<p>There are also a few static class methods, C2D2.randomNumber, C2D2.randomColor, and C2D2.getCSSPropertyValue, with the latter used for separation of concerns, allowing convenient detection of CSS style rules specified in stylesheets and applying them as arguments to canvas methods (e.g., for detecting the beginning or end color of a JavaScript-powered transition).</p>
 
-<p>Although this is definitely a work in progress, since I saw no other low-level canvas  libraries out there (i.e., lower level than say building charts and specific objects), I thought I'd make this one available. This was most recently motivated by nostalgia for the simplicity of HIRES and LORES Apple Basic commands and the fun experimentation with randomizing colors, and by the chaining popularized by jQuery.</p>
-
-<p>By inclusion of a conditional script tag, ExplorerCanvas, C2D2 can also work on Internet Explorer (see one of the sample HTML files), though with limited support in some areas. See http://code.google.com/p/explorercanvas/ for details.</p>
+<p>Although this is definitely still a work in progress (feedback welcome), since I saw no other low-level canvas libraries out there (i.e., lower level than say building charts and specific objects), I thought I'd make this one available. This was most recently motivated by nostalgia for the simplicity of HIRES and LORES Apple Basic commands and the fun experimentation with randomizing colors, and by the chaining popularized by jQuery. Enjoy!</p>
 
 </body>
 </html>
