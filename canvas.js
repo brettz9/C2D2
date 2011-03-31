@@ -146,9 +146,11 @@ function _C2D2ContextSetup () {
 }
 
 C2D2Element = w[canvasElementClassName] = function C2D2Element (arr, opts) {
+    var parent, canvas, fs, out, stream, 
+        el = opts, d = typeof document !== 'undefined' ? document : null,
+        bNodeModule = typeof require !== 'undefined' && typeof exports !== 'undefined',
+        noArray = typeof arr !== 'object' || !arr.length;
 
-    var d = typeof document !== 'undefined' ? document : {}, el = opts,  parent ,  bNodeModule = typeof exports !== 'undefined', canvas, fs, out, stream ;
-    var noArray = typeof arr !== 'object' || !arr.length;
     if (noArray) {
         el = opts = arr;
         arr = null;
@@ -161,8 +163,28 @@ C2D2Element = w[canvasElementClassName] = function C2D2Element (arr, opts) {
     if (typeof opts === 'string') {
         el = d.getElementById(opts);
     }
-    else if (typeof opts === 'object' && !opts.nodeName && !bNodeModule) {
-
+    else if (typeof opts === 'object' && bNodeModule) {
+        canvas = require('canvas');
+        el = new canvas();
+        if (opts.width || opts.w) {
+            el.width = opts.width || opts.w;
+        }
+        if (opts.height || opts.h) {
+            el.height = opts.height || opts.h;
+        }
+        if (opts.fileStream) {
+             fs = require('fs');
+             out = fs.createWriteStream(opts.fileStream);
+             stream = el.createPNGStream();
+             stream.on('data', function (chunk) {
+                 out.write(chunk);
+             });
+             stream.on('end', function () {
+                 out.end();
+             });
+        }
+    }
+    else if (typeof opts === 'object' && !opts.nodeName) {
         el = (d.createElementNS && d.documentElement.namespaceURI !== null) ?
                     d.createElementNS('http://www.w3.org/1999/xhtml', 'canvas') : d.createElement('canvas');
         if (opts.width || opts.w) {
@@ -188,33 +210,9 @@ C2D2Element = w[canvasElementClassName] = function C2D2Element (arr, opts) {
                 opts.appendTo :
                 d.body;
     }
-    else if (typeof opts === 'object' && bNodeModule) {
-        canvas=require('canvas');
-        el=new canvas();
-        if (opts.width || opts.w) {
-            el.width = opts.width || opts.w;
-        }
-        if (opts.height || opts.h) {
-            el.height = opts.height || opts.h;
-        }
-        if (opts.fileStream) {
-             fs = require("fs");
-
-             out = fs.createWriteStream(opts.fileStream) , stream = el.createPNGStream();
-
-             stream.on('data', function (chunk) {
-                 out.write(chunk);
-             });
-
-             stream.on('end', function () {
-                 out.end();
-             });
-        }
-    }
     else if (typeof opts === 'undefined') {
         el = d.getElementsByTagName('canvas')[0];
     }
-
 
     if (!noArray && el.setAttribute) {
         el.setAttribute('width', arr[0]);
@@ -223,7 +221,6 @@ C2D2Element = w[canvasElementClassName] = function C2D2Element (arr, opts) {
     if (parent) {
         parent.appendChild(el);
     }
-
 
     if (w.G_vmlCanvasManager) { // If using ExplorerCanvas to get IE support: http://code.google.com/p/explorercanvas/
         el = G_vmlCanvasManager.initElement(el);
@@ -237,7 +234,6 @@ C2D2Context = w[canvasContextClassName] = function C2D2Context (arr, opts) {
     if (!(this instanceof C2D2Context)) {
         return new C2D2Context(arr, opts);
     }
-
 
     var el = this.el = this.canvas = C2D2Element(arr, opts);
 
