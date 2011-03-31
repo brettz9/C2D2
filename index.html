@@ -51,10 +51,7 @@
 <h3>Including the file(s)</h3>
 
 <p>The first file (explorercanvas) is conditionally included for compatibility with IE versions &lt; 9</p>
-<code>
-&lt;!--[if lte IE8]>&lt;script type="text/javascript" src="explorercanvas/excanvas.js">&lt;/script>&lt;![endif]--><br />
-&lt;script type="text/javascript" src="canvas.js">&lt;/script>
-</code>
+<script src="https://gist.github.com/897082.js?file=C2D2.html"></script>
 
 <h3>Creating a context (and a canvas element if not yet created):</h3>
 <script src="https://gist.github.com/886440.js?file=C2D2_Creating_Context.js"></script>
@@ -68,6 +65,9 @@
 <h3>Chaining:</h3>
 <script src="https://gist.github.com/886447.js?file=C2D2_Chaining.js"></script>
 
+<h3>Usage with Node.js Server-Side JavaScript</h3>
+<p>Note that this usage requires <a href="https://github.com/LearnBoost/node-canvas">node-canvas</a>. Also note that C2D2 will generate a PNG file when the (equivalent) 'path' or 'fileStream' attribute is included, and the directory is never cleaned up by C2D2. Besides creating new files, it will also always rewrite the file if already present. I have not worked closely with this functionality, so please report any bugs to me at brettz9 at the site Yahoo.</p>
+<script src="https://gist.github.com/897072.js?file=C2D2-node-canvas.js"></script>
 
 <h2>Current Status</h2>
 
