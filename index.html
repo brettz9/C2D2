@@ -1,6 +1,8 @@
 <html><head>
    <style type="text/css" media="screen">
       h1 {text-align:center;}
+      
+      /* Ribbon from http://unindented.org/articles/2009/10/github-ribbon-using-css-transforms/ */
       .ribbon {
         background-color: #a00;
         overflow: hidden;
@@ -44,6 +46,15 @@
 <p>C2D2 (See 2D Too) is a light-weight wrapper for HTML5 Canvas, providing jQuery-style chaining in a light package, along with a few light but useful utilities.</p>
 
 <h2>Usage</h2>
+
+<h3>Including the file(s)</h3>
+
+<p>The first file (explorercanvas) is conditionally included for compatibility with IE versions &lt; 9</p>
+<code>
+&lt;!--[if lte IE8]>&lt;script type="text/javascript" src="explorercanvas/excanvas.js">&lt;/script>&lt;![endif]--><br />
+&lt;script type="text/javascript" src="canvas.js">&lt;/script>
+</code>
+
 <h3>Creating a context (and a canvas element if not yet created):</h3>
 <script src="https://gist.github.com/886440.js?file=C2D2_Creating_Context.js"></script>
 
