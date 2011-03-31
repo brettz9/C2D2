@@ -2,7 +2,8 @@
                     canvasImageDataClassName, canvasGradientClassName, canvasPatternClassName,
                     canvasPixelArrayClassName) {
 
-var w = window, C2D2Element, C2D2Context, C2D2Gradient, C2D2Pattern, C2D2CanvasPixelArray;
+//add nodejs support, and exports interface to modules that require this module
+var w = typeof window !== "undefined" ? window : exports, C2D2Element, C2D2Context, C2D2Gradient, C2D2Pattern, C2D2CanvasPixelArray;
 
 // Fix: Wrap up any specific methods or properties which might be used on the opaque pattern and
 //     gradient child objects, if ever exposed, so that these can be properly wrapped and made chainable.
@@ -145,7 +146,8 @@ function _C2D2ContextSetup () {
 }
 
 C2D2Element = w[canvasElementClassName] = function C2D2Element (arr, opts) {
-    var d = document, el = opts, parent;
+
+    var d = typeof document !== 'undefined' ? document : {}, el = opts,  parent ,  bNodeModule = typeof exports !== 'undefined', canvas, fs, out, stream ;
     var noArray = typeof arr !== 'object' || !arr.length;
     if (noArray) {
         el = opts = arr;
@@ -154,11 +156,13 @@ C2D2Element = w[canvasElementClassName] = function C2D2Element (arr, opts) {
     else {
         opts = opts || {};
     }
+
 // Fix: deal with string w/h coords, number w/h coords
     if (typeof opts === 'string') {
         el = d.getElementById(opts);
     }
-    else if (typeof opts === 'object' && !opts.nodeName) {
+    else if (typeof opts === 'object' && !opts.nodeName && !bNodeModule) {
+
         el = (d.createElementNS && d.documentElement.namespaceURI !== null) ?
                     d.createElementNS('http://www.w3.org/1999/xhtml', 'canvas') : d.createElement('canvas');
         if (opts.width || opts.w) {
@@ -184,17 +188,44 @@ C2D2Element = w[canvasElementClassName] = function C2D2Element (arr, opts) {
                 opts.appendTo :
                 d.body;
     }
+    else if (typeof opts === 'object' && bNodeModule) {
+        canvas=require('canvas');
+        el=new canvas();
+        if (opts.width || opts.w) {
+            el.width = opts.width || opts.w;
+        }
+        if (opts.height || opts.h) {
+            el.height = opts.height || opts.h;
+        }
+        if (opts.fileStream) {
+             fs = require("fs");
+
+             out = fs.createWriteStream(opts.fileStream) , stream = el.createPNGStream();
+
+             stream.on('data', function (chunk) {
+                 out.write(chunk);
+             });
+
+             stream.on('end', function () {
+                 out.end();
+             });
+        }
+    }
     else if (typeof opts === 'undefined') {
         el = d.getElementsByTagName('canvas')[0];
     }
-    if (!noArray) {
+
+
+    if (!noArray && el.setAttribute) {
         el.setAttribute('width', arr[0]);
         el.setAttribute('height', arr[1]);
     }
     if (parent) {
         parent.appendChild(el);
     }
-    if (window.G_vmlCanvasManager) { // If using ExplorerCanvas to get IE support: http://code.google.com/p/explorercanvas/
+
+
+    if (w.G_vmlCanvasManager) { // If using ExplorerCanvas to get IE support: http://code.google.com/p/explorercanvas/
         el = G_vmlCanvasManager.initElement(el);
     }
     return el;
@@ -206,8 +237,10 @@ C2D2Context = w[canvasContextClassName] = function C2D2Context (arr, opts) {
     if (!(this instanceof C2D2Context)) {
         return new C2D2Context(arr, opts);
     }
-    var d = document,
-        el = this.el = this.canvas = C2D2Element(arr, opts);
+
+
+    var el = this.el = this.canvas = C2D2Element(arr, opts);
+
     this.context = this.parent = el.getContext('2d');
     if (!C2D2Context.prototype.arc) {
         _C2D2ContextSetup();
