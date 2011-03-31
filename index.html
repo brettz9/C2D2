@@ -1,37 +1,38 @@
-<html><head>
-   <style type="text/css" media="screen">
-      h1 {text-align:center;}
-      
-      /* Ribbon from http://unindented.org/articles/2009/10/github-ribbon-using-css-transforms/ */
-      .ribbon {
-        background-color: #a00;
-        overflow: hidden;
-        /* top left corner */
-        position: absolute;
-        left: -3em;
-        top: 2.5em;
-        /* 45 deg ccw rotation */
-        -moz-transform: rotate(-45deg);
-        -webkit-transform: rotate(-45deg);
-        /* shadow */
-        -moz-box-shadow: 0 0 1em #888;
-        -webkit-box-shadow: 0 0 1em #888;
-      }
-      .ribbon a {
-        border: 1px solid #faa;
-        color: #fff;
-        display: block;
-        font: bold 81.25% 'Helvetiva Neue', Helvetica, Arial, sans-serif;
-        margin: 0.05em 0 0.075em 0;
-        padding: 0.5em 3.5em;
-        text-align: center;
-        text-decoration: none;
-        /* shadow */
-        text-shadow: 0 0 0.5em #444;
-      }
-    </style>
-</head>
-
+<html>
+   <head>
+       <title>C2D2</title>
+       <style type="text/css" media="screen">
+          h1 {text-align:center;}
+          
+          /* Ribbon from http://unindented.org/articles/2009/10/github-ribbon-using-css-transforms/ */
+          .ribbon {
+            background-color: #a00;
+            overflow: hidden;
+            /* top left corner */
+            position: absolute;
+            left: -3em;
+            top: 2.5em;
+            /* 45 deg ccw rotation */
+            -moz-transform: rotate(-45deg);
+            -webkit-transform: rotate(-45deg);
+            /* shadow */
+            -moz-box-shadow: 0 0 1em #888;
+            -webkit-box-shadow: 0 0 1em #888;
+          }
+          .ribbon a {
+            border: 1px solid #faa;
+            color: #fff;
+            display: block;
+            font: bold 81.25% 'Helvetiva Neue', Helvetica, Arial, sans-serif;
+            margin: 0.05em 0 0.075em 0;
+            padding: 0.5em 3.5em;
+            text-align: center;
+            text-decoration: none;
+            /* shadow */
+            text-shadow: 0 0 0.5em #444;
+          }
+        </style>
+    </head>
 <body>
   <div class="ribbon">
     <a href="https://github.com/brettz9/C2D2">Fork me on GitHub</a>
@@ -72,7 +73,7 @@
 
 <p>All HTML5 Canvas (2D Context) methods and properties are wrapped, as is the Canvas element itself, and convenient (hopefully more intuitively named) wrapper methods are also available, with the character '$' preceding the method names in the case of such utilities (e.g., $line wraps lineTo, $lineColor wraps strokeStyle, etc.). You can always access the canvas and 2D context methods and properties, with the small difference that everything (besides getter properties and methods which return their own content) can be chained, and that properties are accessible via methods, of the same name, with a no-argument-call being treated as a getter and everything else as a setter.</p>
 
-<p>There are also a few static class methods, Canvas2d.randomNumber, Canvas2d.randomColor, and Canvas2d.getCSSPropertyValue, with the latter used for separation of concerns, allowing convenient detection of CSS style rules specified in stylesheets and applying them as arguments to canvas methods.</p>
+<p>There are also a few static class methods, C2D2.randomNumber, C2D2.randomColor, and C2D2.getCSSPropertyValue, with the latter used for separation of concerns, allowing convenient detection of CSS style rules specified in stylesheets and applying them as arguments to canvas methods.</p>
 
 <p>Although this is definitely a work in progress, since I saw no other low-level canvas  libraries out there (i.e., lower level than say building charts and specific objects), I thought I'd make this one available. This was most recently motivated by nostalgia for the simplicity of HIRES and LORES Apple Basic commands and the fun experimentation with randomizing colors, and by the chaining popularized by jQuery.</p>
 
