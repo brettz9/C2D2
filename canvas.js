@@ -146,7 +146,7 @@ function _C2D2ContextSetup () {
 }
 
 C2D2Element = w[canvasElementClassName] = function C2D2Element (arr, opts) {
-    var parent, canvas, fs, out, stream, 
+    var parent, canvas, fs, out, stream, path,
         el = opts, d = typeof document !== 'undefined' ? document : null,
         bNodeModule = typeof require !== 'undefined' && typeof exports !== 'undefined',
         noArray = typeof arr !== 'object' || !arr.length;
@@ -172,9 +172,10 @@ C2D2Element = w[canvasElementClassName] = function C2D2Element (arr, opts) {
         if (opts.height || opts.h) {
             el.height = opts.height || opts.h;
         }
-        if (opts.fileStream) {
+        path = opts.fileStream || opts.path;
+        if (path) {
              fs = require('fs');
-             out = fs.createWriteStream(opts.fileStream);
+             out = fs.createWriteStream(path);
              stream = el.createPNGStream();
              stream.on('data', function (chunk) {
                  out.write(chunk);
