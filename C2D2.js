@@ -146,18 +146,18 @@ function _C2D2ContextSetup () {
 }
 
 C2D2Element = w[canvasElementClassName] = function C2D2Element (arr, opts) {
-    var parent, canvas, fs, out, stream, path,
+    var parent, canvas, fs, out, stream, path, width, height, bNodeModule,
         el = opts, d = typeof document !== 'undefined' ? document : null,
-        bNodeModule = typeof require !== 'undefined' && typeof exports !== 'undefined',
         noArray = typeof arr !== 'object' || !arr.length;
 
     if (noArray) {
         el = opts = arr;
-        arr = null;
+        arr = [];
     }
     else {
         opts = opts || {};
     }
+    bNodeModule = opts && (opts.path || opts.fileStream);
 
 // Fix: deal with string w/h coords, number w/h coords
     if (typeof opts === 'string') {
@@ -166,11 +166,13 @@ C2D2Element = w[canvasElementClassName] = function C2D2Element (arr, opts) {
     else if (typeof opts === 'object' && bNodeModule) {
         canvas = require('canvas');
         el = new canvas();
-        if (opts.width || opts.w) {
-            el.width = opts.width || opts.w;
+        width = arr[0] || opts.width || opts.w;
+        height = arr[1] || opts.height || opts.h;
+        if (width) {
+            el.width = width;
         }
-        if (opts.height || opts.h) {
-            el.height = opts.height || opts.h;
+        if (height) {
+            el.height = height;
         }
         path = opts.fileStream || opts.path;
         if (path) {
