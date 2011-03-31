@@ -567,7 +567,7 @@ C2D2Context.getCSSPropertyValue = function (selectorText, propertyName, sheet) {
 };
 
 /*
-Exports the following as globals (though only "Canvas2d" is really needed);
+Exports the following as globals (though only "C2D2" is really needed);
     the name of the class to create may be altered here
 */
-}('Canvas2d', 'CanvasElement', 'C2D2ImageData', 'C2D2Gradient', 'C2D2Pattern', 'C2D2CanvasPixelArray'));
+}('C2D2', 'C2D2CanvasElement', 'C2D2ImageData', 'C2D2Gradient', 'C2D2Pattern', 'C2D2CanvasPixelArray'));
