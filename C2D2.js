@@ -567,7 +567,7 @@ C2D2Context.getCSSPropertyValue = function (selectorText, propertyName, sheet) {
         _getPropertyFromStyleSheet =
             function (ss, selectorText, propertyName) {
                 var rule,
-                    rules = ss.cssRules || ss.rules; /* Mozilla or IE */
+                    rules = ss.cssRules || ss.rules; // Mozilla or IE
                 for (j = 0, crl = rules.length; j < crl; j++) {
                     rule = rules[j];
                     try {
@@ -575,7 +575,7 @@ C2D2Context.getCSSPropertyValue = function (selectorText, propertyName, sheet) {
                             return rule.style.getPropertyValue(propertyName);
                         }
                     }
-                    catch (err) { /* IE */
+                    catch (err) { // IE
                         if (rule.selectorText === selectorText) {
                             propertyName = propertyName.replace(/-([a-z])/g, String.prototype.toUpperCase);
                             return rule.style[propertyName];
