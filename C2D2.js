@@ -34,7 +34,7 @@ function _arrayify (begin) {
 // Adds NodeJS support, and exports interface to modules that require this module
 var c2d2Element, C2D2Context, C2D2Gradient, C2D2Pattern, C2D2CanvasPixelArray,
     C2D2ImageData,
-    w = exports === undefined ? window : exports,
+    w = window === undefined ? global : window, // This should not be needed by Node
     m = module === undefined ? window : module.exports,
     buildMethod = function (m) {
         return function () {
