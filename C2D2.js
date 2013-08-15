@@ -1,14 +1,21 @@
 /*globals exports, CSSRule, require */
 /*jslint todo:true*/
+var exports;
 (function (canvasContextClassName, canvasElementClassName,
                     canvasImageDataClassName, canvasGradientClassName, canvasPatternClassName,
                     canvasPixelArrayClassName) {
 'use strict';
+
+if (!String.prototype.trim) {
+    String.prototype.trim = function () {
+        return this.replace(/^\s+|\s+$/g, '');
+    };
+}
+
 //add nodejs support, and exports interface to modules that require this module
 var c2d2Element, C2D2Context, C2D2Gradient, C2D2Pattern, C2D2CanvasPixelArray,
     C2D2ImageData,
-    w = typeof window !== 'undefined' ? window : exports,
-
+    w = exports === undefined ? window : exports,
     buildMethod = function (m) {
         return function () {
             this.parent[m].apply(this.parent, arguments);
@@ -16,14 +23,15 @@ var c2d2Element, C2D2Context, C2D2Gradient, C2D2Pattern, C2D2CanvasPixelArray,
         };
     },
     buildGetterMethod = function (gm, methodFromProperty, WrapperClass) {
-        return function () {
-            if (gm === 'putImageData' && typeof arguments[0] === 'object' && arguments[0].imageData) { // Todo: Hackish check for taking regular ImageData object
-                arguments[0] = arguments[0].imageData;
+        return function (imageData) {
+            var args = [].slice.call(arguments);
+            if (gm === 'putImageData' && typeof imageData === 'object' && imageData.imageData) { // Todo: Hackish check for taking regular ImageData object
+                args[0] = imageData.imageData;
             }
             if (methodFromProperty) {
                 return new WrapperClass(this.parent[gm]);
             }
-            return new WrapperClass(this.parent[gm].apply(this.parent, arguments));
+            return new WrapperClass(this.parent[gm].apply(this.parent, args));
         };
     },
     buildLiteralGetterMethod = function (gm) {
@@ -48,7 +56,6 @@ var c2d2Element, C2D2Context, C2D2Gradient, C2D2Pattern, C2D2CanvasPixelArray,
     },
     // Todo: Wrap up any specific methods or properties which might be used on the opaque pattern and
     //     gradient child objects, if ever exposed, so that these can be properly wrapped and made chainable.
-
     DelegateChain = {
         addMethods : function (methods, className) {
             var i, m, methl;
@@ -125,9 +132,9 @@ C2D2Gradient = w[canvasGradientClassName] = function C2D2Gradient (gradientObj) 
     this.parent = this.gradient = gradientObj;
 };
 
-function _C2D2PatternSetup () {
+//function _C2D2PatternSetup () {
     // Fully opaque
-}
+//}
 
 // Fully opaque
 // If never any benefits to wrapping (with chainable new methods), just avoid making this child class
@@ -317,7 +324,7 @@ function _arrayify (begin) {
         args = arguments;
     if (typeof begin === 'string') {
         args = [];
-        coords = begin.replace(/^\s*(.*?)\s*$/, '$1').replace(/\s*,\s+/g, ',').split(/\s+/);
+        coords = begin.trim().replace(/\s*,\s+/g, ',').split(/\s+/);
 
         _forEach(coords, function (item, idx) {
             args[idx] = item.split(',');
@@ -388,11 +395,7 @@ C2D2Context.addMethods({
             }
             return this;
         }
-        x = x || 0;
-        y = y || 0;
-        w = w || this.width;
-        h = h || this.height;
-        this.fillRect(x, y, w, h);
+        this.fillRect(x || 0, y || 0, w || this.width, h || this.height);
     },
     $clearRect : function (x, y, w, h) {
         var i, argl;
@@ -402,11 +405,7 @@ C2D2Context.addMethods({
             }
             return this;
         }
-        x = x || 0;
-        y = y || 0;
-        w = w || this.width;
-        h = h || this.height;
-        this.clearRect(x, y, w, h);
+        this.clearRect(x || 0, y || 0, w || this.width, h || this.height);
     },
     
     // $rect, $clip, $arcTo
@@ -419,11 +418,7 @@ C2D2Context.addMethods({
             }
             return this;
         }
-        x = x || 0;
-        y = y || 0;
-        w = w || this.width;
-        h = h || this.height;
-        this.strokeRect(x, y, w, h);
+        this.strokeRect(x || 0, y || 0, w || this.width, h || this.height);
     },
     $arc : function (x, y, radius, startAngle, endAngle, anticlockwise) {
         var i, argl;
@@ -470,19 +465,19 @@ C2D2Context.addMethods({
 });
 C2D2Context.extend({ // Don't auto-return 'this' object for these
     $shadowColor : function (value) {
-        if (value == 'random') {
+        if (value === 'random') {
             value = C2D2Context.randomColor();
         }
         return this.shadowColor(value);
     },
     $fillColor : function (value) { // getter or setter
-        if (value == 'random') {
+        if (value === 'random') {
             value = C2D2Context.randomColor();
         }
         return this.fillStyle(value);
     },
     $lineColor : function (value) { // getter or setter
-        if (value == 'random') {
+        if (value === 'random') {
             value = C2D2Context.randomColor();
         }
         return this.strokeStyle(value);
