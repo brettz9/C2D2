@@ -557,12 +557,12 @@ C2D2Context.randomColor = function (r, g, b, rmax, gmax, bmax) {
     var red = C2D2Context.randomNumber(r, rmax),
         green = C2D2Context.randomNumber(g, gmax),
         blue = C2D2Context.randomNumber(b, bmax);
-    return 'rgb('+red+','+green+','+blue+')';
+    return 'rgb(' + red + ',' + green + ',' + blue + ')';
 };
 // Useful for separation of concerns, detecting the CSS style rule for a given class, id, or other selector and applying it as an argument to a canvas method,
 // so that the JavaScript does not need to be concerned with secondary styling (of course the images it generates is a kind of style)
 C2D2Context.getCSSPropertyValue = function (selectorText, propertyName, sheet) {
-    var ss, value,
+    var ss, val,
         i = 0, j = 0, dsl = 0, crl = 0,
         _getPropertyFromStyleSheet =
             function (ss, selectorText, propertyName) {
@@ -590,12 +590,12 @@ C2D2Context.getCSSPropertyValue = function (selectorText, propertyName, sheet) {
     }
     for (i = 0, dsl = document.styleSheets.length; i < dsl; i++) {
         ss = document.styleSheets[i];
-        value = _getPropertyFromStyleSheet(ss, selectorText, propertyName);
-        if (value) {
+        val = _getPropertyFromStyleSheet(ss, selectorText, propertyName);
+        if (val) {
             break;
         }
     }
-    return value;
+    return val;
 };
 
 /*
