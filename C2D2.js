@@ -595,12 +595,12 @@ C2D2Context.getCSSPropertyValue = function (selectorText, propertyName, sheet) {
     return val;
 };
 
-// Attach classes for sake of extensibility (or utilization for CanvasElement)
+// Attach classes for sake of extensibility (or utilization for canvasElement)
 C2D2Context.CanvasPixelArray = C2D2CanvasPixelArray;
 C2D2Context.ImageData = C2D2ImageData;
 C2D2Context.Gradient = C2D2Gradient;
 C2D2Context.Pattern = C2D2Pattern;
-C2D2Context.CanvasElement = c2d2Element;
+C2D2Context.canvasElement = c2d2Element;
 
 // EXPORTS
 if (define && define.amd) {
