@@ -1,4 +1,4 @@
-/*globals CSSRule, require */
+/*globals CSSRule, require, global */
 /*jslint todo:true*/
 var module, exports, define;
 (function () {
