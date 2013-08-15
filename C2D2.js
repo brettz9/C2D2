@@ -12,7 +12,28 @@ if (!String.prototype.trim) {
     };
 }
 
-//add nodejs support, and exports interface to modules that require this module
+function _forEach (arr, h) {
+    var i, arrl;
+    for (i = 0, arrl = arr.length; i < arrl; i++) {
+        h(arr[i], i);
+    }
+}
+
+function _arrayify (begin) {
+    var coords,
+        args = arguments;
+    if (typeof begin === 'string') {
+        args = [];
+        coords = begin.trim().replace(/\s*,\s+/g, ',').split(/\s+/);
+
+        _forEach(coords, function (item, idx) {
+            args[idx] = item.split(',');
+        });
+    }
+    return args;
+}
+
+// Adds NodeJS support, and exports interface to modules that require this module
 var c2d2Element, C2D2Context, C2D2Gradient, C2D2Pattern, C2D2CanvasPixelArray,
     C2D2ImageData,
     w = exports === undefined ? window : exports,
@@ -107,7 +128,9 @@ C2D2CanvasPixelArray = w[canvasPixelArrayClassName] = function C2D2CanvasPixelAr
 };
 
 function _C2D2ImageDataSetup () {
-    var props = ['width', 'height'], getterMethods = ['data'];
+    var props = [
+        'width', 'height', 'resolution' // Todo: The latter is read-only
+    ], getterMethods = ['data'];
     DelegateChain.addGetterMethods(getterMethods, canvasImageDataClassName, C2D2CanvasPixelArray, true);
     DelegateChain.addPropertyMethods(props, canvasImageDataClassName);
 }
@@ -277,19 +300,18 @@ C2D2Context = w[canvasContextClassName] = function C2D2Context (arr, opts) {
     if (!C2D2Context.prototype.arc) {
         _C2D2ContextSetup();
     }
-    // Expose the c2d2Element properties
+    // Expose the c2d2Element properties (todo: could use Object.defineProperty to ensure stayed in sync)
     this.width = this.el.width;
     this.height = this.el.height;
     return this; // Satisfy Netbeans
 };
 // Expose the c2d2Element methods
-C2D2Context.prototype.getContext = function () {
-    return this.el.getContext.apply(this.el, arguments);
-};
-C2D2Context.prototype.toDataURL = function () {
-    return this.el.toDataURL.apply(this.el, arguments);
-};
-
+_forEach(['transferControlToProxy', // Todo: Wrap this method's CanvasProxy return result?
+    'getContext', 'supportsContext', 'setContext', 'toDataURL', 'toDataURLHD', 'toBlob', 'toBlobHD'], function (method) {
+    C2D2Context.prototype[method] = function () {
+        return this.el[method].apply(this.el, arguments);
+    };
+});
 
 C2D2Context.addMethods = function (methodMap) {
     var m, method;
@@ -311,27 +333,6 @@ C2D2Context.extend = function (obj) { // Keeps constructor property in tact
         }
     }
 };
-
-function _forEach (arr, h) {
-    var i, arrl;
-    for (i = 0, arrl = arr.length; i < arrl; i++) {
-        h(arr[i], i);
-    }
-}
-
-function _arrayify (begin) {
-    var coords,
-        args = arguments;
-    if (typeof begin === 'string') {
-        args = [];
-        coords = begin.trim().replace(/\s*,\s+/g, ',').split(/\s+/);
-
-        _forEach(coords, function (item, idx) {
-            args[idx] = item.split(',');
-        });
-    }
-    return args;
-}
 
 // EXTENSIONS
 C2D2Context.addMethods({
