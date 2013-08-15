@@ -1,14 +1,52 @@
 /*globals exports, CSSRule, require */
+/*jslint todo:true*/
 (function (canvasContextClassName, canvasElementClassName,
                     canvasImageDataClassName, canvasGradientClassName, canvasPatternClassName,
                     canvasPixelArrayClassName) {
 'use strict';
 //add nodejs support, and exports interface to modules that require this module
-var C2D2Element, C2D2Context, C2D2Gradient, C2D2Pattern, C2D2CanvasPixelArray,
+var c2d2Element, C2D2Context, C2D2Gradient, C2D2Pattern, C2D2CanvasPixelArray,
     C2D2ImageData,
     w = typeof window !== 'undefined' ? window : exports,
 
-    // Fix: Wrap up any specific methods or properties which might be used on the opaque pattern and
+    buildMethod = function (m) {
+        return function () {
+            this.parent[m].apply(this.parent, arguments);
+            return this;
+        };
+    },
+    buildGetterMethod = function (gm, methodFromProperty, WrapperClass) {
+        return function () {
+            if (gm === 'putImageData' && typeof arguments[0] === 'object' && arguments[0].imageData) { // Todo: Hackish check for taking regular ImageData object
+                arguments[0] = arguments[0].imageData;
+            }
+            if (methodFromProperty) {
+                return new WrapperClass(this.parent[gm]);
+            }
+            return new WrapperClass(this.parent[gm].apply(this.parent, arguments));
+        };
+    },
+    buildLiteralGetterMethod = function (gm) {
+        return function () {
+            return this.parent[gm].apply(this.parent, arguments);
+        };
+    },
+    buildPropertyMethod = function (p) {
+        return function (value) {
+            if (value === undefined) {
+                return this.parent[p];
+            }
+            this.parent[p] = value;
+            return this;
+        };
+    },
+    buildContextMethods = function (method) {
+        return function () {
+            method.apply(this, arguments);
+            return this;
+        };
+    },
+    // Todo: Wrap up any specific methods or properties which might be used on the opaque pattern and
     //     gradient child objects, if ever exposed, so that these can be properly wrapped and made chainable.
 
     DelegateChain = {
@@ -16,10 +54,7 @@ var C2D2Element, C2D2Context, C2D2Gradient, C2D2Pattern, C2D2CanvasPixelArray,
             var i, m, methl;
             for (i = 0, methl = methods.length; i < methl; i++) {
                 m = methods[i];
-                w[className].prototype[m] = (function (m) {return function () {
-                    this.parent[m].apply(this.parent, arguments);
-                    return this;
-                };}(m));
+                w[className].prototype[m] = buildMethod(m);
             }
         },
         addGetterMethods : function (getterMethods, className, WrapperClass, methodFromProperty) {
@@ -27,20 +62,10 @@ var C2D2Element, C2D2Context, C2D2Gradient, C2D2Pattern, C2D2CanvasPixelArray,
             for (i = 0, gmethl = getterMethods.length; i < gmethl; i++) {
                 gm = getterMethods[i];
                 if (WrapperClass) {
-                    w[className].prototype[gm] = (function (gm) {return function () {
-                        if (gm === 'putImageData' && typeof arguments[0] === 'object' && arguments[0].imageData) { // Fix: Hackish check for taking regular ImageData object
-                            arguments[0] = arguments[0].imageData;
-                        }
-                        if (methodFromProperty) {
-                            return new WrapperClass(this.parent[gm]);
-                        }
-                        return new WrapperClass(this.parent[gm].apply(this.parent, arguments));
-                    };}(gm));
+                    w[className].prototype[gm] = buildGetterMethod(gm, methodFromProperty, WrapperClass);
                 }
                 else { // For those which return a literal
-                    w[className].prototype[gm] = (function (gm) {return function () {
-                        return this.parent[gm].apply(this.parent, arguments);
-                    };}(gm));
+                    w[className].prototype[gm] = buildLiteralGetterMethod(gm);
                 }
             }
         },
@@ -48,13 +73,7 @@ var C2D2Element, C2D2Context, C2D2Gradient, C2D2Pattern, C2D2CanvasPixelArray,
             var i, p, propl;
             for (i = 0, propl = props.length; i < propl; i++) {
                 p = props[i];
-                w[className].prototype[p] = (function (p) {return function (value) {
-                    if (value === undefined) {
-                        return this.parent[p];
-                    }
-                    this.parent[p] = value;
-                    return this;
-                };}(p));
+                w[className].prototype[p] = buildPropertyMethod(p);
             }
         }
     };
@@ -127,8 +146,8 @@ function _C2D2ContextSetup () {
         'clip','closePath','drawImage','fill','fillRect','fillText','lineTo','moveTo',
         'quadraticCurveTo','rect','restore','rotate','save','scale','setTransform',
         'stroke','strokeRect','strokeText','transform','translate'], // drawFocusRing not currently supported
-        // Fix: Implement these to be wrapped so can get and set data in their own child chains
-        // Fix: createPattern is a wholly opaque object, so might need to have child wrappers
+        // Todo: Implement these to be wrapped so can get and set data in their own child chains
+        // Todo: createPattern is a wholly opaque object, so might need to have child wrappers
         //    if implementing any known methods in the future
         imageDataGetterMethods = ['createImageData','getImageData','putImageData'],
         gradientGetterMethods = ['createLinearGradient', 'createRadialGradient'],
@@ -152,9 +171,9 @@ function _C2D2ContextSetup () {
     DelegateChain.addPropertyMethods(props, canvasContextClassName);
 }
 
-C2D2Element = w[canvasElementClassName] = function C2D2Element (arr, opts) {
-    var parent, canvas, fs, out, stream, path, width, height, bNodeModule,
-        el = opts, d = typeof document !== 'undefined' ? document : null,
+c2d2Element = w[canvasElementClassName] = function c2d2Element (arr, opts) {
+    var parent, Canvas, fs, out, stream, path, width, height, bNodeModule,
+        el = opts, d = w.document || null,
         noArray = typeof arr !== 'object' || !arr.length;
 
     if (noArray) {
@@ -166,12 +185,12 @@ C2D2Element = w[canvasElementClassName] = function C2D2Element (arr, opts) {
     }
     bNodeModule = opts && (opts.path || opts.fileStream);
 
-// Fix: deal with string w/h coords, number w/h coords
+    // Todo: deal with string w/h coords, number w/h coords
     if (typeof opts === 'string') {
         el = d.getElementById(opts);
     }
     else if (typeof opts === 'object' && bNodeModule) {
-        canvas = require('canvas');
+        Canvas = require('canvas');
         el = new Canvas();
         width = arr[0] || opts.width || opts.w;
         height = arr[1] || opts.height || opts.h;
@@ -245,18 +264,18 @@ C2D2Context = w[canvasContextClassName] = function C2D2Context (arr, opts) {
         return new C2D2Context(arr, opts);
     }
 
-    var el = this.el = this.canvas = C2D2Element(arr, opts);
+    var el = this.el = this.canvas = c2d2Element(arr, opts);
 
     this.context = this.parent = el.getContext('2d');
     if (!C2D2Context.prototype.arc) {
         _C2D2ContextSetup();
     }
-    // Expose the C2D2Element properties
+    // Expose the c2d2Element properties
     this.width = this.el.width;
     this.height = this.el.height;
     return this; // Satisfy Netbeans
 };
-// Expose the C2D2Element methods
+// Expose the c2d2Element methods
 C2D2Context.prototype.getContext = function () {
     return this.el.getContext.apply(this.el, arguments);
 };
@@ -269,11 +288,8 @@ C2D2Context.addMethods = function (methodMap) {
     var m, method;
     for (m in methodMap) {
         if (methodMap.hasOwnProperty(m)) {
-            method = methodMap[m]; // Fix: Automate adding of '$' to the method?
-            C2D2Context.prototype[m] = (function (method) {return function () {
-                method.apply(this, arguments);
-                return this;
-            };}(method));
+            method = methodMap[m]; // Todo: Automate adding of '$' to the method?
+            C2D2Context.prototype[m] = buildContextMethods(method);
         }
     }
 };
@@ -566,9 +582,7 @@ C2D2Context.getCSSPropertyValue = function (selectorText, propertyName, sheet) {
                     }
                     catch (err) { /* IE */
                         if (rule.selectorText === selectorText) {
-                            propertyName = propertyName.replace(/-([a-z])/g, function (n0, n1) {
-                                return n1.toUpperCase();
-                            });
+                            propertyName = propertyName.replace(/-([a-z])/g, String.prototype.toUpperCase);
                             return rule.style[propertyName];
                         }
                     }
