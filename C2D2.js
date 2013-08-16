@@ -3,6 +3,9 @@
 
 /**
 * @todo Resume ensuring properties/methods are added and any todos noted for potential to accept specific arguments as wrapped objects or return wrapped items: {@link http://www.whatwg.org/specs/web-apps/current-work/multipage/the-canvas-element.html#dfnReturnLink-0}
+* @todo add with package.json (including Node dependencies) to npm
+* @todo Add tests, including for window, Node, AMD
+* @todo Add shim plugin dependency once ready
 */
 var module, exports, define;
 (function () {
