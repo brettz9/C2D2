@@ -1,5 +1,9 @@
 /*globals CSSRule, require, global */
 /*jslint todo:true*/
+
+/**
+* @todo Resume ensuring properties/methods are added and any todos noted for potential to accept specific arguments as wrapped objects or return wrapped items: {@link http://www.whatwg.org/specs/web-apps/current-work/multipage/the-canvas-element.html#dfnReturnLink-0}
+*/
 var module, exports, define;
 (function () {
 'use strict';
@@ -170,22 +174,24 @@ C2D2Pattern = function C2D2Pattern (patternObj) {
 function _C2D2ContextSetup () {
     // Predefined methods
     var methods = ['arc','arcTo','beginPath','bezierCurveTo','clearRect',
-        'clip','closePath','drawImage','fill','fillRect','fillText','lineTo','moveTo',
-        'quadraticCurveTo','rect','restore','rotate','save','scale','setTransform',
+        'clip','closePath','commit','drawImage','fill','fillRect','fillText','lineTo','moveTo',
+        'quadraticCurveTo','rect','resetTransform','restore','rotate','save','scale','setTransform',
         'stroke','strokeRect','strokeText','transform','translate'], // drawFocusRing not currently supported
         // Todo: Implement these to be wrapped so can get and set data in their own child chains
         // Todo: createPattern is a wholly opaque object, so might need to have child wrappers
         //    if implementing any known methods in the future
         imageDataGetterMethods = ['createImageData','getImageData','putImageData'],
         gradientGetterMethods = ['createLinearGradient', 'createRadialGradient'],
-        patternGetterMethods = ['createPattern'],
+        patternGetterMethods = ['createPattern'], // Todo: createPattern to accept wrapped canvas element or context?
         // Do not return 'this' object since purpose is to get (and the objects they create don't have more than
         // one method to make it desirable to chain, except for ImageData ones, moved to childGetterMethods
         getterMethods = ['drawFocusRing','isPointInPath','measureText'],
         // Predefined properties
-        props = ['canvas','fillStyle','font','globalAlpha','globalCompositeOperation',
-        'lineCap','lineJoin','lineWidth','miterLimit','shadowOffsetX','shadowOffsetY',
-        'shadowBlur','shadowColor','strokeStyle','textAlign','textBaseline'];
+        props = ['canvas','currentTransform','fillStyle','font','globalAlpha',
+        'globalCompositeOperation','imageSmoothingEnabled',
+        'lineCap','lineJoin','lineWidth','miterLimit',
+        'shadowOffsetX','shadowOffsetY','shadowBlur','shadowColor',
+        'strokeStyle','textAlign','textBaseline']; // Todo: fillStyle and strokeStyle to return or be settable with wrapped CanvasGradient or CanvasPattern, currentTransform with wrapped SVGMatrix?
 
     DelegateChain.addMethods(methods, C2D2Context);
 
