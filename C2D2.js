@@ -284,28 +284,31 @@ c2d2Element = function c2d2Element (arr, opts) {
     return el;
 };
 
-// Could make generic CanvasContext to accept "type" as a property when not '2d'
+/**
+* Wraps CanvasRenderingContext2D
+* @todo Could make generic CanvasContext to accept "type" as a property when not '2d'
+*/
 C2D2Context = function C2D2Context (arr, opts) {
     if (!(this instanceof C2D2Context)) {
         return new C2D2Context(arr, opts);
     }
 
-    var el = this.el = this.canvas = c2d2Element(arr, opts);
+    var el = this.canvas = c2d2Element(arr, opts);
 
     this.context = this.parent = el.getContext('2d');
     if (!C2D2Context.prototype.arc) {
         _C2D2ContextSetup();
     }
     // Expose the c2d2Element properties (todo: could use Object.defineProperty to ensure stayed in sync)
-    this.width = this.el.width;
-    this.height = this.el.height;
+    this.width = el.width;
+    this.height = el.height;
     return this; // Satisfy Netbeans
 };
 // Expose the c2d2Element methods
 _forEach(['transferControlToProxy', // Todo: Wrap this method's CanvasProxy return result?
     'getContext', 'supportsContext', 'setContext', 'toDataURL', 'toDataURLHD', 'toBlob', 'toBlobHD'], function (method) {
     C2D2Context.prototype[method] = function () {
-        return this.el[method].apply(this.el, arguments);
+        return this.canvas[method].apply(this.canvas, arguments);
     };
 });
 
