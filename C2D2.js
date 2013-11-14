@@ -176,23 +176,24 @@ C2D2Pattern = function C2D2Pattern (patternObj) {
 
 function _C2D2ContextSetup () {
     // Predefined methods
-    var methods = ['arc','arcTo','beginPath','bezierCurveTo','clearRect',
-        'clip','closePath','commit','drawImage','fill','fillRect','fillText','lineTo','moveTo',
-        'quadraticCurveTo','rect','resetTransform','restore','rotate','save','scale','setTransform',
+    var methods = ['addHitRegion','arc','arcTo','beginPath','bezierCurveTo','clearRect',
+        'clip','closePath','commit','drawImage','drawSystemFocusRing','ellipse','fill','fillRect','fillText','getLineDash',
+        'lineTo','moveTo','quadraticCurveTo','rect','removeHitRegion','resetClip','resetTransform',
+        'restore','rotate','save','scale','scrollPathIntoView','setLineDash','setTransform',
         'stroke','strokeRect','strokeText','transform','translate'], // drawFocusRing not currently supported
         // Todo: Implement these to be wrapped so can get and set data in their own child chains
         // Todo: createPattern is a wholly opaque object, so might need to have child wrappers
         //    if implementing any known methods in the future
-        imageDataGetterMethods = ['createImageData','getImageData','putImageData'],
+        imageDataGetterMethods = ['createImageData','createImageDataHD','getImageData','getImageDataHD','putImageData', 'putImageDataHD'],
         gradientGetterMethods = ['createLinearGradient', 'createRadialGradient'],
         patternGetterMethods = ['createPattern'], // Todo: createPattern to accept wrapped canvas element or context?
         // Do not return 'this' object since purpose is to get (and the objects they create don't have more than
         // one method to make it desirable to chain, except for ImageData ones, moved to childGetterMethods
-        getterMethods = ['drawFocusRing','isPointInPath','measureText'],
+        getterMethods = ['drawCustomFocusRing', 'isPointInPath','isPointInStroke','measureText'], // wrap TextMetrics of measureText?
         // Predefined properties
-        props = ['canvas','currentTransform','fillStyle','font','globalAlpha',
+        props = ['canvas','currentTransform','direction','fillStyle','font','globalAlpha',
         'globalCompositeOperation','imageSmoothingEnabled',
-        'lineCap','lineJoin','lineWidth','miterLimit',
+        'lineCap','lineDashOffset','lineJoin','lineWidth','miterLimit',
         'shadowOffsetX','shadowOffsetY','shadowBlur','shadowColor',
         'strokeStyle','textAlign','textBaseline']; // Todo: fillStyle and strokeStyle to return or be settable with wrapped CanvasGradient or CanvasPattern, currentTransform with wrapped SVGMatrix?
 
@@ -315,7 +316,7 @@ C2D2Context = function C2D2Context (arr, opts) {
 };
 // Expose the c2d2Element methods
 _forEach(['transferControlToProxy', // Todo: Wrap this method's CanvasProxy return result?
-    'getContext', 'supportsContext', 'setContext', 'toDataURL', 'toDataURLHD', 'toBlob', 'toBlobHD'], function (method) {
+    'getContext', 'probablySupportsContext', 'supportsContext', 'setContext', 'toDataURL', 'toDataURLHD', 'toBlob', 'toBlobHD'], function (method) {
     C2D2Context.prototype[method] = function () {
         return this.canvas[method].apply(this.canvas, arguments);
     };
