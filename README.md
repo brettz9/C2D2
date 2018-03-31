@@ -11,8 +11,31 @@ See <http://brettz9.github.com/C2D2/> for examples and further details.
 
 ## Usage (browser)
 
+ES6 Modules:
+
 ```html
-<script src="node_modules/c2d2/src/c2d2.js"></script>
+<script type="module">
+
+import C2D2 from 'node_modules/c2d2/dist/c2d2-es.js';
+
+C2D2([1000, 450]).$shadow({color:'green', blur:2, offset:[5, 10]})
+    .$line({color:'red', width:5, xy:[[75, 50], [100,75], [100,25]]})
+    .$fill({color:'blue', xy:[[175, 150], [200,175], [200,125]]});
+
+</script>
+```
+
+For older browsers:
+
+```html
+<script src="node_modules/c2d2/dist/c2d2.js"></script>
+```
+
+```js
+// Available as a global
+C2D2([1000, 450]).$shadow({color:'green', blur:2, offset:[5, 10]})
+    .$line({color:'red', width:5, xy:[[75, 50], [100,75], [100,25]]})
+    .$fill({color:'blue', xy:[[175, 150], [200,175], [200,125]]});
 ```
 
 ## Usage (Node)
@@ -24,3 +47,4 @@ const C2D2 = require('c2d2');
 ## To-dos
 
 - Add tests
+- Document API
