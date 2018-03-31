@@ -1,4 +1,5 @@
-/*globals CSSRule, require, global */
+/* eslint-env node, amd */
+/* globals CSSRule, require, global */
 
 /**
 * @todo Switch to ES6 modules and build to `dist` with Rollup
@@ -7,107 +8,99 @@
 * @todo Add tests, including for window, Node, AMD
 * @todo Add shim plugin dependency once ready
 */
-var module, exports, define;
 (() => {
 'use strict';
 
 function _forEach (arr, h) {
-    var i, arrl;
-    for (i = 0, arrl = arr.length; i < arrl; i++) {
+    for (let i = 0, arrl = arr.length; i < arrl; i++) {
         h(arr[i], i);
     }
 }
 
 function _arrayify (begin) {
-    var coords,
+    let coords,
         args = arguments;
     if (typeof begin === 'string') {
         args = [];
-        coords = begin.trim().replace(/\s*,\s+/g, ',').split(/\s+/);
+        coords = begin.trim().replace(/\s*,\s+/g, ', ').split(/\s+/);
 
         _forEach(coords, function (item, idx) {
-            args[idx] = item.split(',');
+            args[idx] = item.split(', ');
         });
     }
     return args;
 }
 
 // Adds NodeJS support, and exports interface to modules that require this module
-var c2d2Element, C2D2Context, C2D2Gradient, C2D2Pattern, C2D2CanvasPixelArray,
-    C2D2ImageData,
-    w = window === undefined ? global : window, // This should not be needed by Node
-    m = module === undefined ? window : module.exports,
-    buildMethod = function (m) {
-        return function () {
-            this.parent[m].apply(this.parent, arguments);
-            return this;
-        };
+const w = window === undefined ? global : window, // This should not be needed by Node
+    m = typeof module === 'undefined' ? window : module.exports;
+function buildMethod (m) {
+    return function () {
+        this.parent[m].apply(this.parent, arguments);
+        return this;
+    };
+}
+function buildGetterMethod (gm, methodFromProperty, WrapperClass) {
+    return function (imageData) {
+        const args = [].slice.call(arguments);
+        if (gm === 'putImageData' && typeof imageData === 'object' && imageData.imageData) { // Todo: Hackish check for taking regular ImageData object
+            args[0] = imageData.imageData;
+        }
+        if (methodFromProperty) {
+            return new WrapperClass(this.parent[gm]);
+        }
+        return new WrapperClass(this.parent[gm].apply(this.parent, args));
+    };
+}
+function buildLiteralGetterMethod (gm) {
+    return function () {
+        return this.parent[gm].apply(this.parent, arguments);
+    };
+}
+function buildPropertyMethod (p) {
+    return function (value) {
+        if (value === undefined) {
+            return this.parent[p];
+        }
+        this.parent[p] = value;
+        return this;
+    };
+}
+function buildContextMethods (method) {
+    return function () {
+        method.apply(this, arguments);
+        return this;
+    };
+}
+// Todo: Wrap up any specific methods or properties which might be used on the opaque pattern and
+//     gradient child objects, if ever exposed, so that these can be properly wrapped and made chainable.
+const DelegateChain = {
+    addMethods (methods, clss) {
+        for (let i = 0, methl = methods.length; i < methl; i++) {
+            const m = methods[i];
+            clss.prototype[m] = buildMethod(m);
+        }
     },
-    buildGetterMethod = function (gm, methodFromProperty, WrapperClass) {
-        return function (imageData) {
-            var args = [].slice.call(arguments);
-            if (gm === 'putImageData' && typeof imageData === 'object' && imageData.imageData) { // Todo: Hackish check for taking regular ImageData object
-                args[0] = imageData.imageData;
-            }
-            if (methodFromProperty) {
-                return new WrapperClass(this.parent[gm]);
-            }
-            return new WrapperClass(this.parent[gm].apply(this.parent, args));
-        };
-    },
-    buildLiteralGetterMethod = function (gm) {
-        return function () {
-            return this.parent[gm].apply(this.parent, arguments);
-        };
-    },
-    buildPropertyMethod = function (p) {
-        return function (value) {
-            if (value === undefined) {
-                return this.parent[p];
-            }
-            this.parent[p] = value;
-            return this;
-        };
-    },
-    buildContextMethods = function (method) {
-        return function () {
-            method.apply(this, arguments);
-            return this;
-        };
-    },
-    // Todo: Wrap up any specific methods or properties which might be used on the opaque pattern and
-    //     gradient child objects, if ever exposed, so that these can be properly wrapped and made chainable.
-    DelegateChain = {
-        addMethods (methods, clss) {
-            var i, m, methl;
-            for (i = 0, methl = methods.length; i < methl; i++) {
-                m = methods[i];
-                clss.prototype[m] = buildMethod(m);
-            }
-        },
-        addGetterMethods (getterMethods, clss, WrapperClass, methodFromProperty) {
-            var i, gm, gmethl;
-            for (i = 0, gmethl = getterMethods.length; i < gmethl; i++) {
-                gm = getterMethods[i];
-                if (WrapperClass) {
-                    clss.prototype[gm] = buildGetterMethod(gm, methodFromProperty, WrapperClass);
-                }
-                else { // For those which return a literal
-                    clss.prototype[gm] = buildLiteralGetterMethod(gm);
-                }
-            }
-        },
-        addPropertyMethods (props, clss) {
-            var i, p, propl;
-            for (i = 0, propl = props.length; i < propl; i++) {
-                p = props[i];
-                clss.prototype[p] = buildPropertyMethod(p);
+    addGetterMethods (getterMethods, clss, WrapperClass, methodFromProperty) {
+        for (let i = 0, gmethl = getterMethods.length; i < gmethl; i++) {
+            const gm = getterMethods[i];
+            if (WrapperClass) {
+                clss.prototype[gm] = buildGetterMethod(gm, methodFromProperty, WrapperClass);
+            } else { // For those which return a literal
+                clss.prototype[gm] = buildLiteralGetterMethod(gm);
             }
         }
-    };
+    },
+    addPropertyMethods (props, clss) {
+        for (let i = 0, propl = props.length; i < propl; i++) {
+            const p = props[i];
+            clss.prototype[p] = buildPropertyMethod(p);
+        }
+    }
+};
 
 function _C2D2CanvasPixelArraySetup () {
-    var props = ['length']; // We'll just use this commonly used accessor name
+    const props = ['length']; // We'll just use this commonly used accessor name
     C2D2CanvasPixelArray.prototype.item = function (value, value2) {
         if (value2 === undefined) {
             return this.parent[value];
@@ -119,7 +112,7 @@ function _C2D2CanvasPixelArraySetup () {
     DelegateChain.addPropertyMethods(props, C2D2CanvasPixelArray);
 }
 
-C2D2CanvasPixelArray = function C2D2CanvasPixelArray (canvasPixelArrayObj) {
+function C2D2CanvasPixelArray (canvasPixelArrayObj) {
     if (!C2D2CanvasPixelArray.prototype.length) {
         _C2D2CanvasPixelArraySetup();
     }
@@ -127,14 +120,15 @@ C2D2CanvasPixelArray = function C2D2CanvasPixelArray (canvasPixelArrayObj) {
 };
 
 function _C2D2ImageDataSetup () {
-    var props = [
-        'width', 'height', 'resolution' // Todo: The latter is read-only
-    ], getterMethods = ['data'];
+    const props = [
+            'width', 'height', 'resolution' // Todo: The latter is read-only
+        ],
+        getterMethods = ['data'];
     DelegateChain.addGetterMethods(getterMethods, C2D2ImageData, C2D2CanvasPixelArray, true);
     DelegateChain.addPropertyMethods(props, C2D2ImageData);
 }
 
-C2D2ImageData = function C2D2ImageData (imageDataObj) {
+function C2D2ImageData (imageDataObj) {
     if (!C2D2ImageData.prototype.width) {
         _C2D2ImageDataSetup();
     }
@@ -142,54 +136,56 @@ C2D2ImageData = function C2D2ImageData (imageDataObj) {
 };
 
 function _C2D2GradientSetup () {
-    var methods = ['addColorStop'];
+    const methods = ['addColorStop'];
     DelegateChain.addMethods(methods, C2D2Gradient);
 }
 
 // Partly opaque
-C2D2Gradient = function C2D2Gradient (gradientObj) {
+function C2D2Gradient (gradientObj) {
     if (!C2D2Gradient.prototype.addColorStop) {
         _C2D2GradientSetup();
     }
     this.parent = this.gradient = gradientObj;
-};
+}
 
-//function _C2D2PatternSetup () {
-    // Fully opaque
-//}
+// function _C2D2PatternSetup () {
+//      Fully opaque
+// }
 
 // Fully opaque
 // If never any benefits to wrapping (with chainable new methods), just avoid making this child class
-C2D2Pattern = function C2D2Pattern (patternObj) {
-    //if (!C2D2Pattern.prototype.width) { // no known properties/methods
-    // _C2D2PatternSetup();
-    //}
+function C2D2Pattern (patternObj) {
+    // if (!C2D2Pattern.prototype.width) { // no known properties/methods
+    //    _C2D2PatternSetup();
+    // }
     this.parent = this.pattern = patternObj;
     return patternObj; // Just return the object for now, as appears there will be no need to wrap
-};
+}
 
 function _C2D2ContextSetup () {
     // Predefined methods
-    var methods = ['addHitRegion','arc','arcTo','beginPath','bezierCurveTo','clearRect',
-        'clip','closePath','commit','drawImage','drawSystemFocusRing','ellipse','fill','fillRect','fillText','getLineDash',
-        'lineTo','moveTo','quadraticCurveTo','rect','removeHitRegion','resetClip','resetTransform',
-        'restore','rotate','save','scale','scrollPathIntoView','setLineDash','setTransform',
-        'stroke','strokeRect','strokeText','transform','translate'], // drawFocusRing not currently supported
-        // Todo: Implement these to be wrapped so can get and set data in their own child chains
-        // Todo: createPattern is a wholly opaque object, so might need to have child wrappers
-        //    if implementing any known methods in the future
-        imageDataGetterMethods = ['createImageData','createImageDataHD','getImageData','getImageDataHD','putImageData', 'putImageDataHD'],
+    const methods = [
+        'addHitRegion', 'arc', 'arcTo', 'beginPath', 'bezierCurveTo', 'clearRect',
+        'clip', 'closePath', 'commit', 'drawImage', 'drawSystemFocusRing', 'ellipse', 'fill', 'fillRect', 'fillText', 'getLineDash',
+        'lineTo', 'moveTo', 'quadraticCurveTo', 'rect', 'removeHitRegion', 'resetClip', 'resetTransform',
+        'restore', 'rotate', 'save', 'scale', 'scrollPathIntoView', 'setLineDash', 'setTransform',
+        'stroke', 'strokeRect', 'strokeText', 'transform', 'translate'
+    ]; // drawFocusRing not currently supported
+    // Todo: Implement these to be wrapped so can get and set data in their own child chains
+    // Todo: createPattern is a wholly opaque object, so might need to have child wrappers
+    //    if implementing any known methods in the future
+    const imageDataGetterMethods = ['createImageData', 'createImageDataHD', 'getImageData', 'getImageDataHD', 'putImageData', 'putImageDataHD'],
         gradientGetterMethods = ['createLinearGradient', 'createRadialGradient'],
         patternGetterMethods = ['createPattern'], // Todo: createPattern to accept wrapped canvas element or context?
         // Do not return 'this' object since purpose is to get (and the objects they create don't have more than
         // one method to make it desirable to chain, except for ImageData ones, moved to childGetterMethods
-        getterMethods = ['drawCustomFocusRing', 'isPointInPath','isPointInStroke','measureText'], // wrap TextMetrics of measureText?
+        getterMethods = ['drawCustomFocusRing', 'isPointInPath', 'isPointInStroke', 'measureText']; // wrap TextMetrics of measureText?
         // Predefined properties
-        props = ['canvas','currentTransform','direction','fillStyle','font','globalAlpha',
-        'globalCompositeOperation','imageSmoothingEnabled',
-        'lineCap','lineDashOffset','lineJoin','lineWidth','miterLimit',
-        'shadowOffsetX','shadowOffsetY','shadowBlur','shadowColor',
-        'strokeStyle','textAlign','textBaseline']; // Todo: fillStyle and strokeStyle to return or be settable with wrapped CanvasGradient or CanvasPattern, currentTransform with wrapped SVGMatrix?
+    const props = ['canvas', 'currentTransform', 'direction', 'fillStyle', 'font', 'globalAlpha',
+        'globalCompositeOperation', 'imageSmoothingEnabled',
+        'lineCap', 'lineDashOffset', 'lineJoin', 'lineWidth', 'miterLimit',
+        'shadowOffsetX', 'shadowOffsetY', 'shadowBlur', 'shadowColor',
+        'strokeStyle', 'textAlign', 'textBaseline']; // Todo: fillStyle and strokeStyle to return or be settable with wrapped CanvasGradient or CanvasPattern, currentTransform with wrapped SVGMatrix?
 
     DelegateChain.addMethods(methods, C2D2Context);
 
@@ -202,25 +198,24 @@ function _C2D2ContextSetup () {
     DelegateChain.addPropertyMethods(props, C2D2Context);
 }
 
-c2d2Element = function c2d2Element (arr, opts) {
-    var parent, Canvas, fs, out, stream, path, width, height, bNodeModule,
-        el = opts, d = w.document || null,
-        noArray = typeof arr !== 'object' || !arr.length;
+function c2d2Element (arr, opts) {
+    let parent, Canvas, fs, out, stream, path, width, height,
+        el = opts;
+    const d = w.document || null;
+    const noArray = typeof arr !== 'object' || !arr.length;
 
     if (noArray) {
         el = opts = arr;
         arr = [];
-    }
-    else {
+    } else {
         opts = opts || {};
     }
-    bNodeModule = opts && (opts.path || opts.fileStream);
+    const bNodeModule = opts && (opts.path || opts.fileStream);
 
     // Todo: deal with string w/h coords, number w/h coords
     if (typeof opts === 'string') {
         el = d.getElementById(opts);
-    }
-    else if (typeof opts === 'object' && bNodeModule) {
+    } else if (typeof opts === 'object' && bNodeModule) {
         Canvas = require('canvas');
         el = new Canvas();
         width = arr[0] || opts.width || opts.w;
@@ -233,20 +228,20 @@ c2d2Element = function c2d2Element (arr, opts) {
         }
         path = opts.fileStream || opts.path;
         if (path) {
-             fs = require('fs');
-             out = fs.createWriteStream(path);
-             stream = el.createPNGStream();
-             stream.on('data', function (chunk) {
-                 out.write(chunk);
-             });
-             stream.on('end', function () {
-                 out.end();
-             });
+            fs = require('fs');
+            out = fs.createWriteStream(path);
+            stream = el.createPNGStream();
+            stream.on('data', function (chunk) {
+                out.write(chunk);
+            });
+            stream.on('end', function () {
+                out.end();
+            });
         }
-    }
-    else if (typeof opts === 'object' && !opts.nodeName) {
-        el = (d.createElementNS && d.documentElement.namespaceURI !== null) ?
-                    d.createElementNS('http://www.w3.org/1999/xhtml', 'canvas') : d.createElement('canvas');
+    } else if (typeof opts === 'object' && !opts.nodeName) {
+        el = (d.createElementNS && d.documentElement.namespaceURI !== null)
+            ? d.createElementNS('http://www.w3.org/1999/xhtml', 'canvas')
+            : d.createElement('canvas');
         if (opts.width || opts.w) {
             el.setAttribute('width', opts.width || opts.w);
         }
@@ -265,12 +260,12 @@ c2d2Element = function c2d2Element (arr, opts) {
         if (opts['class'] || opts.className) {
             el.setAttribute('class', opts['class'] || opts.className);
         }
-        parent = opts.appendTo ? typeof opts.appendTo === 'string' ?
-                d.getElementById(opts.appendTo) :
-                opts.appendTo :
-                d.body;
-    }
-    else if (opts === undefined) {
+        parent = opts.appendTo
+            ? typeof opts.appendTo === 'string'
+                ? d.getElementById(opts.appendTo)
+                : opts.appendTo
+            : d.body;
+    } else if (opts === undefined) {
         el = d.getElementsByTagName('canvas')[0];
     }
 
@@ -292,12 +287,12 @@ c2d2Element = function c2d2Element (arr, opts) {
 * Wraps CanvasRenderingContext2D
 * @todo Could make generic CanvasContext to accept "type" as a property when not '2d'
 */
-C2D2Context = function C2D2Context (arr, opts) {
+function C2D2Context (arr, opts) {
     if (!(this instanceof C2D2Context)) {
         return new C2D2Context(arr, opts);
     }
 
-    var el = this.canvas = c2d2Element(arr, opts);
+    const el = this.canvas = c2d2Element(arr, opts);
 
     this.context = this.parent = el.getContext('2d');
     if (!C2D2Context.prototype.arc) {
@@ -317,10 +312,9 @@ _forEach(['transferControlToProxy', // Todo: Wrap this method's CanvasProxy retu
 });
 
 C2D2Context.addMethods = function (methodMap) {
-    var m, method;
-    for (m in methodMap) {
+    for (const m in methodMap) {
         if (methodMap.hasOwnProperty(m)) {
-            method = methodMap[m]; // Todo: Automate adding of '$' to the method?
+            const method = methodMap[m]; // Todo: Automate adding of '$' to the method?
             C2D2Context.prototype[m] = buildContextMethods(method);
         }
     }
@@ -328,8 +322,7 @@ C2D2Context.addMethods = function (methodMap) {
 
 // Unlike addMethods, requires manually supplying 'this' at the end
 C2D2Context.extend = function (obj) { // Keeps constructor property in tact
-    var p;
-    for (p in obj) {
+    for (const p in obj) {
         if (obj.hasOwnProperty(p)) {
             C2D2Context.prototype[p] = obj[p];
         }
@@ -339,7 +332,7 @@ C2D2Context.extend = function (obj) { // Keeps constructor property in tact
 // EXTENSIONS
 C2D2Context.addMethods({
     $line (obj, close) {
-        var a, i, argl;
+        let a;
         if (obj && typeof obj === 'object' && !obj.length) {
             if (obj.color) {
                 this.$lineColor(obj.color);
@@ -351,12 +344,11 @@ C2D2Context.addMethods({
                 this.$shadow(obj.shadow);
             }
             a = _arrayify.apply(null, (obj.coords || obj.xy || obj.path));
-        }
-        else {
+        } else {
             a = _arrayify.apply(null, arguments);
         }
         this.beginPath().moveTo.apply(this, a[0]);
-        for (i = 1, argl = a.length; i < argl; i++) {
+        for (let i = 1, argl = a.length; i < argl; i++) {
             this.lineTo.apply(this, a[i]);
         }
         if (close || obj.close) {
@@ -365,7 +357,7 @@ C2D2Context.addMethods({
         this.stroke();
     },
     $fill (obj) {
-        var a, i, argl;
+        let a;
         if (obj && typeof obj === 'object' && !obj.length) {
             if (obj.color) {
                 this.$fillColor(obj.color);
@@ -374,15 +366,14 @@ C2D2Context.addMethods({
                 this.$shadow(obj.shadow);
             }
             a = _arrayify.apply(null, (obj.coords || obj.xy || obj.path));
-        }
-        else {
+        } else {
             a = _arrayify.apply(null, arguments);
         }
         if (a[0].length === 4) {
             return this.$fillRect.apply(this, a);
         }
         this.beginPath().moveTo.apply(this, a[0]);
-        for (i = 1, argl = a.length; i < argl; i++) {
+        for (let i = 1, argl = a.length; i < argl; i++) {
             this.lineTo.apply(this, a[i]);
         }
         this.fill();
@@ -391,9 +382,8 @@ C2D2Context.addMethods({
         this.$clearRect.apply(this, arguments);
     },
     $fillRect (x, y, w, h) {
-        var i, argl;
         if (x && typeof x === 'object' && x.length) {
-            for (i = 0, argl = arguments.length; i < argl; i++) {
+            for (let i = 0, argl = arguments.length; i < argl; i++) {
                 this.$fillRect.apply(this, arguments[i]); // Allow array for coordinates
             }
             return this;
@@ -401,9 +391,8 @@ C2D2Context.addMethods({
         this.fillRect(x || 0, y || 0, w || this.width, h || this.height);
     },
     $clearRect (x, y, w, h) {
-        var i, argl;
         if (x && typeof x === 'object' && x.length) {
-            for (i = 0, argl = arguments.length; i < argl; i++) {
+            for (let i = 0, argl = arguments.length; i < argl; i++) {
                 this.$clearRect.apply(this, arguments[i]); // Allow array for coordinates
             }
             return this;
@@ -414,9 +403,8 @@ C2D2Context.addMethods({
     // $rect, $clip, $arcTo
 
     $strokeRect (x, y, w, h) {
-        var i, argl;
         if (x && typeof x === 'object' && x.length) {
-            for (i = 0, argl = arguments.length; i < argl; i++) {
+            for (let i = 0, argl = arguments.length; i < argl; i++) {
                 this.$strokeRect.apply(this, arguments[i]); // Allow array for coordinates
             }
             return this;
@@ -424,9 +412,8 @@ C2D2Context.addMethods({
         this.strokeRect(x || 0, y || 0, w || this.width, h || this.height);
     },
     $arc (x, y, radius, startAngle, endAngle, anticlockwise) {
-        var i, argl;
         if (x && typeof x === 'object' && x.length) {
-            for (i = 0, argl = arguments.length; i < argl; i++) {
+            for (let i = 0, argl = arguments.length; i < argl; i++) {
                 this.$arc.apply(this, arguments[i]); // Allow array for coordinates
             }
             return this;
@@ -440,9 +427,8 @@ C2D2Context.addMethods({
         this.$quadratic.apply(this, arguments);
     },
     $quadratic (cp1x, cp1y, x, y) {
-        var i, argl;
         if (cp1x && typeof cp1x === 'object' && cp1x.length) {
-            for (i = 0, argl = arguments.length; i < argl; i++) {
+            for (let i = 0, argl = arguments.length; i < argl; i++) {
                 this.$quadratic.apply(this, arguments[i]); // Allow array for coordinates
             }
             return this;
@@ -456,9 +442,8 @@ C2D2Context.addMethods({
         this.$bezier.apply(this, arguments);
     },
     $bezier (cp1x, cp1y, cp2x, cp2y, x, y) {
-        var i, argl;
         if (cp1x && typeof cp1x === 'object' && cp1x.length) {
-            for (i = 0, argl = arguments.length; i < argl; i++) {
+            for (let i = 0, argl = arguments.length; i < argl; i++) {
                 this.$bezier.apply(this, arguments[i]); // Allow array for coordinates
             }
             return this;
@@ -485,16 +470,15 @@ C2D2Context.extend({ // Don't auto-return 'this' object for these
         }
         return this.strokeStyle(value);
     },
-    $imageData () {
-        var args = arguments;
+    $imageData (...args) {
         if (typeof args[0] === 'object' && args[1] !== undefined) {
-            this.putImageData.apply(this, args);
+            this.putImageData(...args);
             return this;
         }
         if (args[2] !== undefined) {
-            return this.getImageData.apply(this, args); // data (length), width, height
+            return this.getImageData(...args); // data (length), width, height
         }
-        return this.createImageData.apply(this, args);
+        return this.createImageData(...args);
     },
     $shadowOffset (x, y) {
         if (x === undefined) {
@@ -504,36 +488,32 @@ C2D2Context.extend({ // Don't auto-return 'this' object for these
         if (typeof x === 'object' && !y && x.length) {
             y = x[1];
             x = x[0];
-        }
-        else if (typeof x === 'string' && x.indexOf(',') !== -1) {
-            var xy = x.split(/\s*,\s*/);
-            x = xy[0];
-            y = xy[1];
+        } else if (typeof x === 'string' && x.indexOf(', ') !== -1) {
+            ([x, y] = x.split(/\s*,\s*/));
         }
         this.shadowOffsetX(x).shadowOffsetY(y);
         return this;
     },
-    $shadowBlur () { // Just a place-holder, at least for now
-        this.shadowBlur.apply(this, arguments);
+    $shadowBlur (...args) { // Just a place-holder, at least for now
+        this.shadowBlur(...args);
     },
-    $shadowOffsetY () { // Just a place-holder, at least for now
-        this.shadowOffsetY.apply(this, arguments);
+    $shadowOffsetY (...args) { // Just a place-holder, at least for now
+        this.shadowOffsetY(...args);
     },
-    $shadowOffsetX () { // Just a place-holder, at least for now
-        this.shadowOffsetX.apply(this, arguments);
+    $shadowOffsetX (...args) { // Just a place-holder, at least for now
+        this.shadowOffsetX(...args);
     },
     $shadow (sh) {
-        var att;
+        let att;
         if (sh === undefined) { // Not super useful compared to native
-            return {offset: this.$shadowOffset(), blur : this.shadowBlur(), color: this.$shadowColor(),
-                           offsetX: this.shadowOffsetX(), offsetY: this.shadowOffsetY()};
+            return {offset: this.$shadowOffset(), blur: this.shadowBlur(), color: this.$shadowColor(),
+                offsetX: this.shadowOffsetX(), offsetY: this.shadowOffsetY()};
         }
         for (att in sh) {
             if (sh.hasOwnProperty(att)) {
                 if (att === 'offset') { // Offer additional property to get the coords together
                     this.$shadowOffset(sh[att]);
-                }
-                else {
+                } else {
                     this['$shadow' + att.charAt(0).toUpperCase() + att.slice(1)](sh[att]);
                 }
             }
@@ -556,38 +536,35 @@ C2D2Context.randomColor = function (r, g, b, rmax, gmax, bmax) {
     rmax = rmax || 255;
     gmax = gmax || 255;
     bmax = bmax || 255;
-    var red = C2D2Context.randomNumber(r, rmax),
+    const red = C2D2Context.randomNumber(r, rmax),
         green = C2D2Context.randomNumber(g, gmax),
         blue = C2D2Context.randomNumber(b, bmax);
-    return 'rgb(' + red + ',' + green + ',' + blue + ')';
+    return 'rgb(' + red + ', ' + green + ', ' + blue + ')';
 };
 /**
 Useful for separation of concerns, detecting the CSS style rule for a given class, id, or other selector and applying it as an argument to a canvas method, so that the JavaScript does not need to be concerned with secondary styling (of course the images it generates is a kind of style)
 */
 C2D2Context.getCSSPropertyValue = function (selectorText, propertyName, sheet) {
-    var ss, val,
-        i = 0, j = 0, dsl = 0, crl = 0,
-        _getPropertyFromStyleSheet =
-            function (ss, selectorText, propertyName) {
-                var rule,
-                    rules = ss.cssRules || ss.rules; // Mozilla or IE
-                for (j = 0, crl = rules.length; j < crl; j++) {
-                    rule = rules[j];
-                    try {
-                        if (rule.type === 1 && // CSSRule.STYLE_RULE
-                            rule.selectorText === selectorText) {
-                            return rule.style.getPropertyValue(propertyName);
-                        }
-                    }
-                    catch (err) { // IE
-                        if (rule.selectorText === selectorText) {
-                            propertyName = propertyName.replace(/-([a-z])/g, String.prototype.toUpperCase);
-                            return rule.style[propertyName];
-                        }
-                    }
+    let ss, val,
+        i = 0, j = 0, dsl = 0, crl = 0;
+    function _getPropertyFromStyleSheet (ss, selectorText, propertyName) {
+        const rules = ss.cssRules || ss.rules; // Mozilla or IE
+        for (j = 0, crl = rules.length; j < crl; j++) {
+            const rule = rules[j];
+            try {
+                if (rule.type === 1 && // CSSRule.STYLE_RULE
+                    rule.selectorText === selectorText) {
+                    return rule.style.getPropertyValue(propertyName);
                 }
-                return false;
-            };
+            } catch (err) { // IE
+                if (rule.selectorText === selectorText) {
+                    propertyName = propertyName.replace(/-([a-z])/g, String.prototype.toUpperCase);
+                    return rule.style[propertyName];
+                }
+            }
+        }
+        return false;
+    };
     if (sheet !== undefined) {
         ss = document.styleSheets[sheet];
         return _getPropertyFromStyleSheet(ss, selectorText, propertyName);
@@ -610,13 +587,11 @@ C2D2Context.Pattern = C2D2Pattern;
 C2D2Context.canvasElement = c2d2Element;
 
 // EXPORTS
-if (define && define.amd) {
+if (typeof define !== 'undefined' && define.amd) {
     define(function () {
         return C2D2Context;
     });
-}
-else {
+} else {
     m.C2D2 = C2D2Context;
 }
-
 })();
