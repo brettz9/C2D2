@@ -1,6 +1,6 @@
 {
   "name": "c2d2",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Light-weight wrapper for HTML5 Canvas, providing jQuery-style chaining in a light package",
   "main": "dist/c2d2.js",
   "module": "src/c2d2.js",
@@ -10,7 +10,9 @@
     "start": "opn http://127.0.0.1:8094/demos/C2D2-cleaned.html && static -p 8094",
     "test": "npm run eslint && npm run rollup && echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {},
+  "dependencies": {
+    "canvas": "^1.6.10"
+  },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "6.26.0",
