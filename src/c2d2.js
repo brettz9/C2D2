@@ -31,8 +31,8 @@ function _arrayify (begin) {
 const w = typeof window === 'undefined' ? global : window; // This should not be needed by Node
 
 function buildMethod (m) {
-    return function () {
-        this.parent[m].apply(this.parent, arguments);
+    return function (...args) {
+        this.parent[m](...args);
         return this;
     };
 }
@@ -45,12 +45,12 @@ function buildGetterMethod (gm, methodFromProperty, WrapperClass) {
         if (methodFromProperty) {
             return new WrapperClass(this.parent[gm]);
         }
-        return new WrapperClass(this.parent[gm].apply(this.parent, args));
+        return new WrapperClass(this.parent[gm](...args));
     };
 }
 function buildLiteralGetterMethod (gm) {
-    return function () {
-        return this.parent[gm].apply(this.parent, arguments);
+    return function (...args) {
+        return this.parent[gm](...args);
     };
 }
 function buildPropertyMethod (p) {
@@ -63,8 +63,8 @@ function buildPropertyMethod (p) {
     };
 }
 function buildContextMethods (method) {
-    return function () {
-        method.apply(this, arguments);
+    return function (...args) {
+        method.apply(this, ...args);
         return this;
     };
 }
@@ -301,9 +301,10 @@ function C2D2Context (arr, opts) {
 };
 // Expose the c2d2Element methods
 _forEach(['transferControlToProxy', // Todo: Wrap this method's CanvasProxy return result?
-    'getContext', 'probablySupportsContext', 'supportsContext', 'setContext', 'toDataURL', 'toDataURLHD', 'toBlob', 'toBlobHD'], function (method) {
-    C2D2Context.prototype[method] = function () {
-        return this.canvas[method].apply(this.canvas, arguments);
+    'getContext', 'probablySupportsContext', 'supportsContext', 'setContext',
+    'toDataURL', 'toDataURLHD', 'toBlob', 'toBlobHD'], function (method) {
+    C2D2Context.prototype[method] = function (...args) {
+        return this.canvas[method](...args);
     };
 });
 
@@ -345,7 +346,7 @@ C2D2Context.addMethods({
         }
         this.beginPath().moveTo.apply(this, a[0]);
         for (let i = 1, argl = a.length; i < argl; i++) {
-            this.lineTo.apply(this, a[i]);
+            this.lineTo(...a[i]);
         }
         if (close || obj.close) {
             this.closePath();
@@ -366,21 +367,21 @@ C2D2Context.addMethods({
             a = _arrayify.apply(null, arguments);
         }
         if (a[0].length === 4) {
-            return this.$fillRect.apply(this, a);
+            return this.$fillRect(...a);
         }
         this.beginPath().moveTo.apply(this, a[0]);
         for (let i = 1, argl = a.length; i < argl; i++) {
-            this.lineTo.apply(this, a[i]);
+            this.lineTo(...a[i]);
         }
         this.fill();
     },
-    $clear () {
-        this.$clearRect.apply(this, arguments);
+    $clear (...args) {
+        this.$clearRect(...args);
     },
     $fillRect (x, y, w, h) {
         if (x && typeof x === 'object' && x.length) {
             for (let i = 0, argl = arguments.length; i < argl; i++) {
-                this.$fillRect.apply(this, arguments[i]); // Allow array for coordinates
+                this.$fillRect(...arguments[i]); // Allow array for coordinates
             }
             return this;
         }
@@ -389,7 +390,7 @@ C2D2Context.addMethods({
     $clearRect (x, y, w, h) {
         if (x && typeof x === 'object' && x.length) {
             for (let i = 0, argl = arguments.length; i < argl; i++) {
-                this.$clearRect.apply(this, arguments[i]); // Allow array for coordinates
+                this.$clearRect(...arguments[i]); // Allow array for coordinates
             }
             return this;
         }
@@ -401,7 +402,7 @@ C2D2Context.addMethods({
     $strokeRect (x, y, w, h) {
         if (x && typeof x === 'object' && x.length) {
             for (let i = 0, argl = arguments.length; i < argl; i++) {
-                this.$strokeRect.apply(this, arguments[i]); // Allow array for coordinates
+                this.$strokeRect(...arguments[i]); // Allow array for coordinates
             }
             return this;
         }
@@ -410,37 +411,37 @@ C2D2Context.addMethods({
     $arc (x, y, radius, startAngle, endAngle, anticlockwise) {
         if (x && typeof x === 'object' && x.length) {
             for (let i = 0, argl = arguments.length; i < argl; i++) {
-                this.$arc.apply(this, arguments[i]); // Allow array for coordinates
+                this.$arc(...arguments[i]); // Allow array for coordinates
             }
             return this;
         }
         this.arc(x, y, radius, startAngle, endAngle, anticlockwise);
     },
-    $quadraticCurve () {
-        this.$quadratic.apply(this, arguments);
+    $quadraticCurve (...args) {
+        this.$quadratic(...args);
     },
-    $quadraticCurveTo () {
-        this.$quadratic.apply(this, arguments);
+    $quadraticCurveTo (...args) {
+        this.$quadratic(...args);
     },
     $quadratic (cp1x, cp1y, x, y) {
         if (cp1x && typeof cp1x === 'object' && cp1x.length) {
             for (let i = 0, argl = arguments.length; i < argl; i++) {
-                this.$quadratic.apply(this, arguments[i]); // Allow array for coordinates
+                this.$quadratic(...arguments[i]); // Allow array for coordinates
             }
             return this;
         }
         this.quadraticCurveTo(cp1x, cp1y, x, y);
     },
-    $bezierCurve () {
-        this.$bezier.apply(this, arguments);
+    $bezierCurve (...args) {
+        this.$bezier(...args);
     },
-    $bezierCurveTo () {
-        this.$bezier.apply(this, arguments);
+    $bezierCurveTo (...args) {
+        this.$bezier(...args);
     },
     $bezier (cp1x, cp1y, cp2x, cp2y, x, y) {
         if (cp1x && typeof cp1x === 'object' && cp1x.length) {
             for (let i = 0, argl = arguments.length; i < argl; i++) {
-                this.$bezier.apply(this, arguments[i]); // Allow array for coordinates
+                this.$bezier(...arguments[i]); // Allow array for coordinates
             }
             return this;
         }

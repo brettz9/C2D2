@@ -21,11 +21,10 @@
     }
 
     function _arrayify(begin) {
-        let coords,
-            args = arguments;
+        let args = arguments;
         if (typeof begin === 'string') {
             args = [];
-            coords = begin.trim().replace(/\s*,\s+/g, ', ').split(/\s+/);
+            const coords = begin.trim().replace(/\s*,\s+/g, ', ').split(/\s+/);
 
             _forEach(coords, (item, idx) => {
                 args[idx] = item.split(', ');
@@ -38,8 +37,8 @@
     const w = typeof window === 'undefined' ? global : window; // This should not be needed by Node
 
     function buildMethod(m) {
-        return function () {
-            this.parent[m].apply(this.parent, arguments);
+        return function (...args) {
+            this.parent[m](...args);
             return this;
         };
     }
@@ -53,12 +52,12 @@
             if (methodFromProperty) {
                 return new WrapperClass(this.parent[gm]);
             }
-            return new WrapperClass(this.parent[gm].apply(this.parent, args));
+            return new WrapperClass(this.parent[gm](...args));
         };
     }
     function buildLiteralGetterMethod(gm) {
-        return function () {
-            return this.parent[gm].apply(this.parent, arguments);
+        return function (...args) {
+            return this.parent[gm](...args);
         };
     }
     function buildPropertyMethod(p) {
@@ -71,8 +70,8 @@
         };
     }
     function buildContextMethods(method) {
-        return function () {
-            method.apply(this, arguments);
+        return function (...args) {
+            method.apply(this, ...args);
             return this;
         };
     }
@@ -192,15 +191,7 @@
     }
 
     function c2d2Element(arr, opts) {
-        let parent,
-            Canvas,
-            fs,
-            out,
-            stream,
-            path,
-            width,
-            height,
-            el = opts;
+        let el = opts;
         const d = w.document || null;
         const noArray = typeof arr !== 'object' || !arr.length;
 
@@ -212,25 +203,26 @@
         }
         const bNodeModule = opts && (opts.path || opts.fileStream);
 
+        let parent;
         // Todo: deal with string w/h coords, number w/h coords
         if (typeof opts === 'string') {
             el = d.getElementById(opts);
         } else if (typeof opts === 'object' && bNodeModule) {
-            Canvas = require('canvas');
+            const Canvas = require('canvas');
             el = new Canvas();
-            width = arr[0] || opts.width || opts.w;
-            height = arr[1] || opts.height || opts.h;
+            const width = arr[0] || opts.width || opts.w;
+            const height = arr[1] || opts.height || opts.h;
             if (width) {
                 el.width = width;
             }
             if (height) {
                 el.height = height;
             }
-            path = opts.fileStream || opts.path;
+            const path = opts.fileStream || opts.path;
             if (path) {
-                fs = require('fs');
-                out = fs.createWriteStream(path);
-                stream = el.createPNGStream();
+                const fs = require('fs');
+                const out = fs.createWriteStream(path);
+                const stream = el.createPNGStream();
                 stream.on('data', chunk => {
                     out.write(chunk);
                 });
@@ -301,8 +293,8 @@
     }// Expose the c2d2Element methods
     _forEach(['transferControlToProxy', // Todo: Wrap this method's CanvasProxy return result?
     'getContext', 'probablySupportsContext', 'supportsContext', 'setContext', 'toDataURL', 'toDataURLHD', 'toBlob', 'toBlobHD'], function (method) {
-        C2D2Context.prototype[method] = function () {
-            return this.canvas[method].apply(this.canvas, arguments);
+        C2D2Context.prototype[method] = function (...args) {
+            return this.canvas[method](...args);
         };
     });
 
@@ -345,7 +337,7 @@
             }
             this.beginPath().moveTo.apply(this, a[0]);
             for (let i = 1, argl = a.length; i < argl; i++) {
-                this.lineTo.apply(this, a[i]);
+                this.lineTo(...a[i]);
             }
             if (close || obj.close) {
                 this.closePath();
@@ -366,21 +358,21 @@
                 a = _arrayify.apply(null, arguments);
             }
             if (a[0].length === 4) {
-                return this.$fillRect.apply(this, a);
+                return this.$fillRect(...a);
             }
             this.beginPath().moveTo.apply(this, a[0]);
             for (let i = 1, argl = a.length; i < argl; i++) {
-                this.lineTo.apply(this, a[i]);
+                this.lineTo(...a[i]);
             }
             this.fill();
         },
-        $clear() {
-            this.$clearRect.apply(this, arguments);
+        $clear(...args) {
+            this.$clearRect(...args);
         },
         $fillRect(x, y, w, h) {
             if (x && typeof x === 'object' && x.length) {
                 for (let i = 0, argl = arguments.length; i < argl; i++) {
-                    this.$fillRect.apply(this, arguments[i]); // Allow array for coordinates
+                    this.$fillRect(...arguments[i]); // Allow array for coordinates
                 }
                 return this;
             }
@@ -389,7 +381,7 @@
         $clearRect(x, y, w, h) {
             if (x && typeof x === 'object' && x.length) {
                 for (let i = 0, argl = arguments.length; i < argl; i++) {
-                    this.$clearRect.apply(this, arguments[i]); // Allow array for coordinates
+                    this.$clearRect(...arguments[i]); // Allow array for coordinates
                 }
                 return this;
             }
@@ -401,7 +393,7 @@
         $strokeRect(x, y, w, h) {
             if (x && typeof x === 'object' && x.length) {
                 for (let i = 0, argl = arguments.length; i < argl; i++) {
-                    this.$strokeRect.apply(this, arguments[i]); // Allow array for coordinates
+                    this.$strokeRect(...arguments[i]); // Allow array for coordinates
                 }
                 return this;
             }
@@ -410,37 +402,37 @@
         $arc(x, y, radius, startAngle, endAngle, anticlockwise) {
             if (x && typeof x === 'object' && x.length) {
                 for (let i = 0, argl = arguments.length; i < argl; i++) {
-                    this.$arc.apply(this, arguments[i]); // Allow array for coordinates
+                    this.$arc(...arguments[i]); // Allow array for coordinates
                 }
                 return this;
             }
             this.arc(x, y, radius, startAngle, endAngle, anticlockwise);
         },
-        $quadraticCurve() {
-            this.$quadratic.apply(this, arguments);
+        $quadraticCurve(...args) {
+            this.$quadratic(...args);
         },
-        $quadraticCurveTo() {
-            this.$quadratic.apply(this, arguments);
+        $quadraticCurveTo(...args) {
+            this.$quadratic(...args);
         },
         $quadratic(cp1x, cp1y, x, y) {
             if (cp1x && typeof cp1x === 'object' && cp1x.length) {
                 for (let i = 0, argl = arguments.length; i < argl; i++) {
-                    this.$quadratic.apply(this, arguments[i]); // Allow array for coordinates
+                    this.$quadratic(...arguments[i]); // Allow array for coordinates
                 }
                 return this;
             }
             this.quadraticCurveTo(cp1x, cp1y, x, y);
         },
-        $bezierCurve() {
-            this.$bezier.apply(this, arguments);
+        $bezierCurve(...args) {
+            this.$bezier(...args);
         },
-        $bezierCurveTo() {
-            this.$bezier.apply(this, arguments);
+        $bezierCurveTo(...args) {
+            this.$bezier(...args);
         },
         $bezier(cp1x, cp1y, cp2x, cp2y, x, y) {
             if (cp1x && typeof cp1x === 'object' && cp1x.length) {
                 for (let i = 0, argl = arguments.length; i < argl; i++) {
-                    this.$bezier.apply(this, arguments[i]); // Allow array for coordinates
+                    this.$bezier(...arguments[i]); // Allow array for coordinates
                 }
                 return this;
             }
@@ -505,13 +497,12 @@
             this.shadowOffsetX(...args);
         },
         $shadow(sh) {
-            let att;
             if (sh === undefined) {
                 // Not super useful compared to native
                 return { offset: this.$shadowOffset(), blur: this.shadowBlur(), color: this.$shadowColor(),
                     offsetX: this.shadowOffsetX(), offsetY: this.shadowOffsetY() };
             }
-            for (att in sh) {
+            for (const att in sh) {
                 if (sh.hasOwnProperty(att)) {
                     if (att === 'offset') {
                         // Offer additional property to get the coords together
@@ -548,15 +539,9 @@
     Useful for separation of concerns, detecting the CSS style rule for a given class, id, or other selector and applying it as an argument to a canvas method, so that the JavaScript does not need to be concerned with secondary styling (of course the images it generates is a kind of style)
     */
     C2D2Context.getCSSPropertyValue = function (selectorText, propertyName, sheet) {
-        let ss,
-            val,
-            i = 0,
-            j = 0,
-            dsl = 0,
-            crl = 0;
         function _getPropertyFromStyleSheet(ss, selectorText, propertyName) {
             const rules = ss.cssRules || ss.rules; // Mozilla or IE
-            for (j = 0, crl = rules.length; j < crl; j++) {
+            for (let j = 0, crl = rules.length; j < crl; j++) {
                 const rule = rules[j];
                 try {
                     if (rule.type === 1 && // CSSRule.STYLE_RULE
@@ -572,11 +557,12 @@
                 }
             }
             return false;
-        }    if (sheet !== undefined) {
+        }    let ss, val;
+        if (sheet !== undefined) {
             ss = document.styleSheets[sheet];
             return _getPropertyFromStyleSheet(ss, selectorText, propertyName);
         }
-        for (i = 0, dsl = document.styleSheets.length; i < dsl; i++) {
+        for (let i = 0, dsl = document.styleSheets.length; i < dsl; i++) {
             ss = document.styleSheets[i];
             val = _getPropertyFromStyleSheet(ss, selectorText, propertyName);
             if (val) {
