@@ -46,5 +46,6 @@ const C2D2 = require('c2d2');
 
 ## To-dos
 
-- Add tests
-- Document API
+1. Add tests
+1. Document API
+1. Pass in `G_vmlCanvasManager` to avoid assuming global (if even needed anymore)?

@@ -15,11 +15,10 @@ function _forEach (arr, h) {
 }
 
 function _arrayify (begin) {
-    let coords,
-        args = arguments;
+    let args = arguments;
     if (typeof begin === 'string') {
         args = [];
-        coords = begin.trim().replace(/\s*,\s+/g, ', ').split(/\s+/);
+        const coords = begin.trim().replace(/\s*,\s+/g, ', ').split(/\s+/);
 
         _forEach(coords, (item, idx) => {
             args[idx] = item.split(', ');
@@ -196,8 +195,7 @@ function _C2D2ContextSetup () {
 }
 
 function c2d2Element (arr, opts) {
-    let parent, Canvas, fs, out, stream, path, width, height,
-        el = opts;
+    let el = opts;
     const d = w.document || null;
     const noArray = typeof arr !== 'object' || !arr.length;
 
@@ -209,25 +207,26 @@ function c2d2Element (arr, opts) {
     }
     const bNodeModule = opts && (opts.path || opts.fileStream);
 
+    let parent;
     // Todo: deal with string w/h coords, number w/h coords
     if (typeof opts === 'string') {
         el = d.getElementById(opts);
     } else if (typeof opts === 'object' && bNodeModule) {
-        Canvas = require('canvas');
+        const Canvas = require('canvas');
         el = new Canvas();
-        width = arr[0] || opts.width || opts.w;
-        height = arr[1] || opts.height || opts.h;
+        const width = arr[0] || opts.width || opts.w;
+        const height = arr[1] || opts.height || opts.h;
         if (width) {
             el.width = width;
         }
         if (height) {
             el.height = height;
         }
-        path = opts.fileStream || opts.path;
+        const path = opts.fileStream || opts.path;
         if (path) {
-            fs = require('fs');
-            out = fs.createWriteStream(path);
-            stream = el.createPNGStream();
+            const fs = require('fs');
+            const out = fs.createWriteStream(path);
+            const stream = el.createPNGStream();
             stream.on('data', (chunk) => {
                 out.write(chunk);
             });
@@ -501,12 +500,11 @@ C2D2Context.extend({ // Don't auto-return 'this' object for these
         this.shadowOffsetX(...args);
     },
     $shadow (sh) {
-        let att;
         if (sh === undefined) { // Not super useful compared to native
             return {offset: this.$shadowOffset(), blur: this.shadowBlur(), color: this.$shadowColor(),
                 offsetX: this.shadowOffsetX(), offsetY: this.shadowOffsetY()};
         }
-        for (att in sh) {
+        for (const att in sh) {
             if (sh.hasOwnProperty(att)) {
                 if (att === 'offset') { // Offer additional property to get the coords together
                     this.$shadowOffset(sh[att]);
@@ -542,11 +540,9 @@ C2D2Context.randomColor = function (r, g, b, rmax, gmax, bmax) {
 Useful for separation of concerns, detecting the CSS style rule for a given class, id, or other selector and applying it as an argument to a canvas method, so that the JavaScript does not need to be concerned with secondary styling (of course the images it generates is a kind of style)
 */
 C2D2Context.getCSSPropertyValue = function (selectorText, propertyName, sheet) {
-    let ss, val,
-        i = 0, j = 0, dsl = 0, crl = 0;
     function _getPropertyFromStyleSheet (ss, selectorText, propertyName) {
         const rules = ss.cssRules || ss.rules; // Mozilla or IE
-        for (j = 0, crl = rules.length; j < crl; j++) {
+        for (let j = 0, crl = rules.length; j < crl; j++) {
             const rule = rules[j];
             try {
                 if (rule.type === 1 && // CSSRule.STYLE_RULE
@@ -562,11 +558,12 @@ C2D2Context.getCSSPropertyValue = function (selectorText, propertyName, sheet) {
         }
         return false;
     };
+    let ss, val;
     if (sheet !== undefined) {
         ss = document.styleSheets[sheet];
         return _getPropertyFromStyleSheet(ss, selectorText, propertyName);
     }
-    for (i = 0, dsl = document.styleSheets.length; i < dsl; i++) {
+    for (let i = 0, dsl = document.styleSheets.length; i < dsl; i++) {
         ss = document.styleSheets[i];
         val = _getPropertyFromStyleSheet(ss, selectorText, propertyName);
         if (val) {
