@@ -23,5 +23,5 @@ const C2D2 = require('c2d2');
 
 ## To-dos
 
-- Switch to ES6 modules source
+- Switch to ES6 modules source with Babel Rollup transform
 - Add tests
