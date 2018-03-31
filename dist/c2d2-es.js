@@ -114,8 +114,7 @@ function C2D2CanvasPixelArray (canvasPixelArrayObj) {
         _C2D2CanvasPixelArraySetup();
     }
     this.parent = this.array = this.pixelArray = canvasPixelArrayObj;
-};
-
+}
 function _C2D2ImageDataSetup () {
     const props = [
             'width', 'height', 'resolution' // Todo: The latter is read-only
@@ -130,8 +129,7 @@ function C2D2ImageData (imageDataObj) {
         _C2D2ImageDataSetup();
     }
     this.parent = this.imageData = imageDataObj;
-};
-
+}
 function _C2D2GradientSetup () {
     const methods = ['addColorStop'];
     DelegateChain.addMethods(methods, C2D2Gradient);
@@ -278,8 +276,7 @@ function c2d2Element (arr, opts) {
         el = w.G_vmlCanvasManager.initElement(el);
     }
     return el;
-};
-
+}
 /**
 * Wraps CanvasRenderingContext2D
 * @todo Could make generic CanvasContext to accept "type" as a property when not '2d'
@@ -299,8 +296,7 @@ function C2D2Context (arr, opts) {
     this.width = el.width;
     this.height = el.height;
     return this; // Satisfy Netbeans
-};
-// Expose the c2d2Element methods
+}// Expose the c2d2Element methods
 _forEach(['transferControlToProxy', // Todo: Wrap this method's CanvasProxy return result?
     'getContext', 'probablySupportsContext', 'supportsContext', 'setContext', 'toDataURL', 'toDataURLHD', 'toBlob', 'toBlobHD'], function (method) {
     C2D2Context.prototype[method] = function () {
@@ -561,8 +557,7 @@ C2D2Context.getCSSPropertyValue = function (selectorText, propertyName, sheet) {
             }
         }
         return false;
-    };
-    if (sheet !== undefined) {
+    }    if (sheet !== undefined) {
         ss = document.styleSheets[sheet];
         return _getPropertyFromStyleSheet(ss, selectorText, propertyName);
     }
