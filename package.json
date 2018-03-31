@@ -1,0 +1,22 @@
+{
+  "name": "c2d2",
+  "version": "0.1.0",
+  "description": "Light-weight wrapper for HTML5 Canvas, providing jQuery-style chaining in a light package",
+  "main": "src/c2d2.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brettz9/C2D2.git"
+  },
+  "keywords": [
+    "canvas"
+  ],
+  "author": "Brett Zamir",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/brettz9/C2D2/issues"
+  },
+  "homepage": "https://github.com/brettz9/C2D2#readme"
+}

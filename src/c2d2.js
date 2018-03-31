@@ -1,21 +1,15 @@
 /*globals CSSRule, require, global */
-/*jslint todo:true*/
 
 /**
+* @todo Switch to ES6 modules and build to `dist` with Rollup
 * @todo Resume ensuring properties/methods are added and any todos noted for potential to accept specific arguments as wrapped objects or return wrapped items: {@link http://www.whatwg.org/specs/web-apps/current-work/multipage/the-canvas-element.html#dfnReturnLink-0}
 * @todo add with package.json (including Node dependencies) to npm
 * @todo Add tests, including for window, Node, AMD
 * @todo Add shim plugin dependency once ready
 */
 var module, exports, define;
-(function () {
+(() => {
 'use strict';
-
-if (!String.prototype.trim) {
-    String.prototype.trim = function () {
-        return this.replace(/^\s+|\s+$/g, '');
-    };
-}
 
 function _forEach (arr, h) {
     var i, arrl;
@@ -84,14 +78,14 @@ var c2d2Element, C2D2Context, C2D2Gradient, C2D2Pattern, C2D2CanvasPixelArray,
     // Todo: Wrap up any specific methods or properties which might be used on the opaque pattern and
     //     gradient child objects, if ever exposed, so that these can be properly wrapped and made chainable.
     DelegateChain = {
-        addMethods : function (methods, clss) {
+        addMethods (methods, clss) {
             var i, m, methl;
             for (i = 0, methl = methods.length; i < methl; i++) {
                 m = methods[i];
                 clss.prototype[m] = buildMethod(m);
             }
         },
-        addGetterMethods : function (getterMethods, clss, WrapperClass, methodFromProperty) {
+        addGetterMethods (getterMethods, clss, WrapperClass, methodFromProperty) {
             var i, gm, gmethl;
             for (i = 0, gmethl = getterMethods.length; i < gmethl; i++) {
                 gm = getterMethods[i];
@@ -103,7 +97,7 @@ var c2d2Element, C2D2Context, C2D2Gradient, C2D2Pattern, C2D2CanvasPixelArray,
                 }
             }
         },
-        addPropertyMethods : function (props, clss) {
+        addPropertyMethods (props, clss) {
             var i, p, propl;
             for (i = 0, propl = props.length; i < propl; i++) {
                 p = props[i];
@@ -344,7 +338,7 @@ C2D2Context.extend = function (obj) { // Keeps constructor property in tact
 
 // EXTENSIONS
 C2D2Context.addMethods({
-    $line: function (obj, close) {
+    $line (obj, close) {
         var a, i, argl;
         if (obj && typeof obj === 'object' && !obj.length) {
             if (obj.color) {
@@ -370,7 +364,7 @@ C2D2Context.addMethods({
         }
         this.stroke();
     },
-    $fill: function (obj) {
+    $fill (obj) {
         var a, i, argl;
         if (obj && typeof obj === 'object' && !obj.length) {
             if (obj.color) {
@@ -393,10 +387,10 @@ C2D2Context.addMethods({
         }
         this.fill();
     },
-    $clear: function () {
+    $clear () {
         this.$clearRect.apply(this, arguments);
     },
-    $fillRect : function (x, y, w, h) {
+    $fillRect (x, y, w, h) {
         var i, argl;
         if (x && typeof x === 'object' && x.length) {
             for (i = 0, argl = arguments.length; i < argl; i++) {
@@ -406,7 +400,7 @@ C2D2Context.addMethods({
         }
         this.fillRect(x || 0, y || 0, w || this.width, h || this.height);
     },
-    $clearRect : function (x, y, w, h) {
+    $clearRect (x, y, w, h) {
         var i, argl;
         if (x && typeof x === 'object' && x.length) {
             for (i = 0, argl = arguments.length; i < argl; i++) {
@@ -416,10 +410,10 @@ C2D2Context.addMethods({
         }
         this.clearRect(x || 0, y || 0, w || this.width, h || this.height);
     },
-    
+
     // $rect, $clip, $arcTo
-    
-    $strokeRect : function (x, y, w, h) {
+
+    $strokeRect (x, y, w, h) {
         var i, argl;
         if (x && typeof x === 'object' && x.length) {
             for (i = 0, argl = arguments.length; i < argl; i++) {
@@ -429,7 +423,7 @@ C2D2Context.addMethods({
         }
         this.strokeRect(x || 0, y || 0, w || this.width, h || this.height);
     },
-    $arc : function (x, y, radius, startAngle, endAngle, anticlockwise) {
+    $arc (x, y, radius, startAngle, endAngle, anticlockwise) {
         var i, argl;
         if (x && typeof x === 'object' && x.length) {
             for (i = 0, argl = arguments.length; i < argl; i++) {
@@ -439,13 +433,13 @@ C2D2Context.addMethods({
         }
         this.arc(x, y, radius, startAngle, endAngle, anticlockwise);
     },
-    $quadraticCurve : function () {
+    $quadraticCurve () {
         this.$quadratic.apply(this, arguments);
     },
-    $quadraticCurveTo : function () {
+    $quadraticCurveTo () {
         this.$quadratic.apply(this, arguments);
     },
-    $quadratic : function (cp1x, cp1y, x, y) {
+    $quadratic (cp1x, cp1y, x, y) {
         var i, argl;
         if (cp1x && typeof cp1x === 'object' && cp1x.length) {
             for (i = 0, argl = arguments.length; i < argl; i++) {
@@ -455,13 +449,13 @@ C2D2Context.addMethods({
         }
         this.quadraticCurveTo(cp1x, cp1y, x, y);
     },
-    $bezierCurve : function () {
+    $bezierCurve () {
         this.$bezier.apply(this, arguments);
     },
-    $bezierCurveTo : function () {
+    $bezierCurveTo () {
         this.$bezier.apply(this, arguments);
     },
-    $bezier : function (cp1x, cp1y, cp2x, cp2y, x, y) {
+    $bezier (cp1x, cp1y, cp2x, cp2y, x, y) {
         var i, argl;
         if (cp1x && typeof cp1x === 'object' && cp1x.length) {
             for (i = 0, argl = arguments.length; i < argl; i++) {
@@ -473,25 +467,25 @@ C2D2Context.addMethods({
     }
 });
 C2D2Context.extend({ // Don't auto-return 'this' object for these
-    $shadowColor : function (value) {
+    $shadowColor (value) {
         if (value === 'random') {
             value = C2D2Context.randomColor();
         }
         return this.shadowColor(value);
     },
-    $fillColor : function (value) { // getter or setter
+    $fillColor (value) { // getter or setter
         if (value === 'random') {
             value = C2D2Context.randomColor();
         }
         return this.fillStyle(value);
     },
-    $lineColor : function (value) { // getter or setter
+    $lineColor (value) { // getter or setter
         if (value === 'random') {
             value = C2D2Context.randomColor();
         }
         return this.strokeStyle(value);
     },
-    $imageData : function () {
+    $imageData () {
         var args = arguments;
         if (typeof args[0] === 'object' && args[1] !== undefined) {
             this.putImageData.apply(this, args);
@@ -502,7 +496,7 @@ C2D2Context.extend({ // Don't auto-return 'this' object for these
         }
         return this.createImageData.apply(this, args);
     },
-    $shadowOffset: function (x, y) {
+    $shadowOffset (x, y) {
         if (x === undefined) {
             return [this.shadowOffsetX(), this.shadowOffsetY()];
         }
@@ -519,16 +513,16 @@ C2D2Context.extend({ // Don't auto-return 'this' object for these
         this.shadowOffsetX(x).shadowOffsetY(y);
         return this;
     },
-    $shadowBlur : function () { // Just a place-holder, at least for now
+    $shadowBlur () { // Just a place-holder, at least for now
         this.shadowBlur.apply(this, arguments);
     },
-    $shadowOffsetY : function () { // Just a place-holder, at least for now
+    $shadowOffsetY () { // Just a place-holder, at least for now
         this.shadowOffsetY.apply(this, arguments);
     },
-    $shadowOffsetX : function () { // Just a place-holder, at least for now
+    $shadowOffsetX () { // Just a place-holder, at least for now
         this.shadowOffsetX.apply(this, arguments);
     },
-    $shadow: function (sh) {
+    $shadow (sh) {
         var att;
         if (sh === undefined) { // Not super useful compared to native
             return {offset: this.$shadowOffset(), blur : this.shadowBlur(), color: this.$shadowColor(),
@@ -625,4 +619,4 @@ else {
     m.C2D2 = C2D2Context;
 }
 
-}());
+})();
