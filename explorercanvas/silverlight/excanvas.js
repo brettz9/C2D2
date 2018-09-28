@@ -145,6 +145,8 @@ if (!window.CanvasRenderingContext2D) {
 
   function createXamlScriptTag() {
     // This script tag contains the boilerplate XAML.
+    // Todo: Should really be replaced with DOM if IE works ok with it,
+    //        but we're at least not adding user variables
     document.write('<script type=text/xaml>' +
         '<Canvas x:Name="root" ' +
         'xmlns="http://schemas.microsoft.com/client/2007" ' +
@@ -153,7 +155,7 @@ if (!window.CanvasRenderingContext2D) {
         'Height="150" ' +
         'Background="Transparent"> ' +
         '</Canvas>' +
-        '</script>');
+        '</script>'); // lgtm [js/eval-like-call]
     // Find the id of the writtenscript file.
     var scripts = document.scripts;
     var script = scripts[scripts.length - 1];
@@ -169,6 +171,7 @@ if (!window.CanvasRenderingContext2D) {
         '</object><div></div></div>';
   }
 
+  /*
   function hasSilverlight() {
     try {
       new ActiveXObject('AgControl.AgControl');
@@ -177,6 +180,7 @@ if (!window.CanvasRenderingContext2D) {
       return false;
     }
   }
+  */
 
   // precompute "00" to "FF"
   var dec2hex = [];
@@ -211,9 +215,11 @@ if (!window.CanvasRenderingContext2D) {
     return result;
   }
 
+  /*
   function doTransform(ctx) {
     transformObject(ctx, getRoot(ctx), ctx.m_);
   }
+  */
 
   function transformObject(ctx, obj, m) {
     var transform = obj.renderTransform;
@@ -294,11 +300,11 @@ if (!window.CanvasRenderingContext2D) {
 
   function hslToRgb(parts){
     var r, g, b;
-    h = parseFloat(parts[0]) / 360 % 360;
+    var h = parseFloat(parts[0]) / 360 % 360;
     if (h < 0)
       h++;
-    s = clamp(percent(parts[1]), 0, 1);
-    l = clamp(percent(parts[2]), 0, 1);
+    var s = clamp(percent(parts[1]), 0, 1);
+    var l = clamp(percent(parts[2]), 0, 1);
     if (s == 0) {
       r = g = b = l; // achromatic
     } else {
@@ -331,7 +337,7 @@ if (!window.CanvasRenderingContext2D) {
   }
 
   function translateColor(styleString) {
-    var str, alpha = 1;
+    var str, alpha;
 
     styleString = String(styleString);
     if (styleString.charAt(0) == '#') {

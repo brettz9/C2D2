@@ -48,7 +48,7 @@ if (!document.createElement('canvas').getContext) {
   var Z = 10;
   var Z2 = Z / 2;
 
-  var IE_VERSION = +navigator.userAgent.match(/MSIE ([\d.]+)?/)[1];
+  // var IE_VERSION = +navigator.userAgent.match(/MSIE ([\d.]+)?/)[1];
 
   /**
    * This funtion is assigned to the <canvas> elements as element.getContext().
@@ -813,8 +813,8 @@ if (!document.createElement('canvas').getContext) {
 
     var d = getCoords(this, dx, dy);
 
-    var w2 = sw / 2;
-    var h2 = sh / 2;
+    // var w2 = sw / 2;
+    // var h2 = sh / 2;
 
     var vmlStr = [];
 
@@ -878,7 +878,7 @@ if (!document.createElement('canvas').getContext) {
 
   contextPrototype.stroke = function(aFill) {
     var lineStr = [];
-    var lineOpen = false;
+    // var lineOpen = false;
 
     var W = 10;
     var H = 10;
@@ -891,17 +891,17 @@ if (!document.createElement('canvas').getContext) {
                  ' stroked="', !aFill, '"',
                  ' path="');
 
-    var newSeq = false;
+    // var newSeq = false;
     var min = {x: null, y: null};
     var max = {x: null, y: null};
 
     for (var i = 0; i < this.currentPath_.length; i++) {
       var p = this.currentPath_[i];
-      var c;
+      // var c;
 
       switch (p.type) {
         case 'moveTo':
-          c = p;
+          // c = p;
           lineStr.push(' m ', mr(p.x), ',', mr(p.y));
           break;
         case 'lineTo':
