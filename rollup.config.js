@@ -1,5 +1,5 @@
 import babel from 'rollup-plugin-babel';
-import uglify from 'rollup-plugin-uglify';
+import {terser} from 'rollup-plugin-terser';
 
 /**
 * @param {boolean} minify Whether to minify output
@@ -22,7 +22,7 @@ function rollupConfig ({minify, format}) {
         config.plugins.push(babel());
     }
     if (minify) {
-        config.plugins.push(uglify());
+        config.plugins.push(terser());
         config.output.sourcemap = true;
     }
     return config;

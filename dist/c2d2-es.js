@@ -506,7 +506,7 @@ C2D2Context.extend({ // Don't auto-return 'this' object for these
                 if (att === 'offset') { // Offer additional property to get the coords together
                     this.$shadowOffset(sh[att]);
                 } else {
-                    this['$shadow' + att.charAt(0).toUpperCase() + att.slice(1)](sh[att]);
+                    this[`$shadow${att.charAt(0).toUpperCase() + att.slice(1)}`](sh[att]);
                 }
             }
         }
@@ -531,7 +531,7 @@ C2D2Context.randomColor = function (r, g, b, rmax, gmax, bmax) {
     const red = C2D2Context.randomNumber(r, rmax),
         green = C2D2Context.randomNumber(g, gmax),
         blue = C2D2Context.randomNumber(b, bmax);
-    return 'rgb(' + red + ', ' + green + ', ' + blue + ')';
+    return `rgb${red}, ${green}, ${blue})`;
 };
 /**
 Useful for separation of concerns, detecting the CSS style rule for a given class, id, or other selector and applying it as an argument to a canvas method, so that the JavaScript does not need to be concerned with secondary styling (of course the images it generates is a kind of style)
