@@ -147,7 +147,7 @@ if (!window.CanvasRenderingContext2D) {
     // This script tag contains the boilerplate XAML.
     // Todo: Should really be replaced with DOM if IE works ok with it,
     //        but we're at least not adding user variables
-    document.write('<script type=text/xaml>' +
+    document.write('<script type=text/xaml>' + // lgtm [js/eval-like-call]
         '<Canvas x:Name="root" ' +
         'xmlns="http://schemas.microsoft.com/client/2007" ' +
         'xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" ' +
