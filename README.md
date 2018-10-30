@@ -28,6 +28,7 @@ C2D2([1000, 450]).$shadow({color:'green', blur:2, offset:[5, 10]})
 For older browsers:
 
 ```html
+<script src="node_modules/@babel/polyfill/dist/polyfill.js"></script>
 <script src="node_modules/c2d2/dist/c2d2.js"></script>
 ```
 

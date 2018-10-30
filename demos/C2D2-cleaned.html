@@ -7,10 +7,10 @@
 </head>
 <body>
 <!--[if lte IE 8]><script src="explorercanvas/excanvas.js"></script><![endif]-->
-<script src="../dist/c2d2.js"></script>
-<script>
+<script type="module">
+import C2D2 from '../src/c2d2.js';
 
-var ctx = C2D2([1000, 450])
+const ctx = C2D2([1000, 450])
             .$shadow({color:'green', blur:2, offset:[5, 10]})
             .$line({color:'red', width:5, xy:[[75, 50], [100,75], [100,25]]})
             .$fill({color:'blue', xy:[[175, 150], [200,175], [200,125]]});

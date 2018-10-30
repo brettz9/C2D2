@@ -1,5 +1,15 @@
 # C2D2 CHANGES
 
+## 0.4.0
+
+- Fix: Point to `dist` for `module`
+- Fix: Regression with arguments passed to `C2D2Context.addMethods` (and
+    used internally by `$` methods)
+- Enhancement: Add `@babel/polyfill` as npm dependency
+- Refactoring: Use `Object.entries`
+- Demos: Use ES6 Modules in "cleaned" file for easier debugging
+- Docs: Indicate `@babel/polyfill` usage
+
 ## 0.3.0
 
 - Fix (explorercanvas): Globals (`h`, `s`, `l`) (lgtm)

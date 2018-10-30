@@ -163,7 +163,7 @@
         args[_key] = arguments[_key];
       }
 
-      method.apply.apply(method, [this].concat(args));
+      method.apply(this, args);
       return this;
     };
   } // Todo: Wrap up any specific methods or properties which might be used on the opaque pattern and
@@ -419,23 +419,25 @@
   });
 
   C2D2Context.addMethods = function (methodMap) {
-    for (var m in methodMap) {
-      if (methodMap.hasOwnProperty(m)) {
-        var method = methodMap[m]; // Todo: Automate adding of '$' to the method?
+    Object.entries(methodMap).forEach(function (_ref) {
+      var _ref2 = _slicedToArray(_ref, 2),
+          methodName = _ref2[0],
+          method = _ref2[1];
 
-        C2D2Context.prototype[m] = buildContextMethods(method);
-      }
-    }
+      C2D2Context.prototype[methodName] = buildContextMethods(method);
+    });
   }; // Unlike addMethods, requires manually supplying 'this' at the end
 
 
   C2D2Context.extend = function (obj) {
     // Keeps constructor property in tact
-    for (var p in obj) {
-      if (obj.hasOwnProperty(p)) {
-        C2D2Context.prototype[p] = obj[p];
-      }
-    }
+    Object.entries(obj).forEach(function (_ref3) {
+      var _ref4 = _slicedToArray(_ref3, 2),
+          propertyName = _ref4[0],
+          propertyValue = _ref4[1];
+
+      C2D2Context.prototype[propertyName] = propertyValue;
+    });
   }; // EXTENSIONS
 
 
@@ -655,6 +657,8 @@
       this.shadowOffsetX.apply(this, arguments);
     },
     $shadow: function $shadow(sh) {
+      var _this = this;
+
       if (sh === undefined) {
         // Not super useful compared to native
         return {
@@ -666,17 +670,18 @@
         };
       }
 
-      for (var att in sh) {
-        if (sh.hasOwnProperty(att)) {
-          if (att === 'offset') {
-            // Offer additional property to get the coords together
-            this.$shadowOffset(sh[att]);
-          } else {
-            this["$shadow".concat(att.charAt(0).toUpperCase() + att.slice(1))](sh[att]);
-          }
-        }
-      }
+      Object.entries(sh).forEach(function (_ref5) {
+        var _ref6 = _slicedToArray(_ref5, 2),
+            att = _ref6[0],
+            shadowOffset = _ref6[1];
 
+        if (att === 'offset') {
+          // Offer additional property to get the coords together
+          _this.$shadowOffset(shadowOffset);
+        } else {
+          _this["$shadow".concat(att.charAt(0).toUpperCase() + att.slice(1))](shadowOffset);
+        }
+      });
       return this;
     }
   });

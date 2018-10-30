@@ -64,7 +64,7 @@ function buildPropertyMethod (p) {
 }
 function buildContextMethods (method) {
     return function (...args) {
-        method.apply(this, ...args);
+        method.apply(this, args);
         return this;
     };
 }
@@ -305,21 +305,16 @@ _forEach(['transferControlToProxy', // Todo: Wrap this method's CanvasProxy retu
 });
 
 C2D2Context.addMethods = function (methodMap) {
-    for (const m in methodMap) {
-        if (methodMap.hasOwnProperty(m)) {
-            const method = methodMap[m]; // Todo: Automate adding of '$' to the method?
-            C2D2Context.prototype[m] = buildContextMethods(method);
-        }
-    }
+    Object.entries(methodMap).forEach(([methodName, method]) => {
+        C2D2Context.prototype[methodName] = buildContextMethods(method);
+    });
 };
 
 // Unlike addMethods, requires manually supplying 'this' at the end
 C2D2Context.extend = function (obj) { // Keeps constructor property in tact
-    for (const p in obj) {
-        if (obj.hasOwnProperty(p)) {
-            C2D2Context.prototype[p] = obj[p];
-        }
-    }
+    Object.entries(obj).forEach(([propertyName, propertyValue]) => {
+        C2D2Context.prototype[propertyName] = propertyValue;
+    });
 };
 
 // EXTENSIONS
@@ -501,15 +496,13 @@ C2D2Context.extend({ // Don't auto-return 'this' object for these
             return {offset: this.$shadowOffset(), blur: this.shadowBlur(), color: this.$shadowColor(),
                 offsetX: this.shadowOffsetX(), offsetY: this.shadowOffsetY()};
         }
-        for (const att in sh) {
-            if (sh.hasOwnProperty(att)) {
-                if (att === 'offset') { // Offer additional property to get the coords together
-                    this.$shadowOffset(sh[att]);
-                } else {
-                    this[`$shadow${att.charAt(0).toUpperCase() + att.slice(1)}`](sh[att]);
-                }
+        Object.entries(sh).forEach(([att, shadowOffset]) => {
+            if (att === 'offset') { // Offer additional property to get the coords together
+                this.$shadowOffset(shadowOffset);
+            } else {
+                this[`$shadow${att.charAt(0).toUpperCase() + att.slice(1)}`](shadowOffset);
             }
-        }
+        });
         return this;
     }
 });

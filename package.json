@@ -1,9 +1,9 @@
 {
   "name": "c2d2",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Light-weight wrapper for HTML5 Canvas, providing jQuery-style chaining in a light package",
   "main": "dist/c2d2.js",
-  "module": "src/c2d2.js",
+  "module": "dist/c2d2-es.js",
   "scripts": {
     "eslint": "eslint .",
     "rollup": "rollup -c",
@@ -11,6 +11,7 @@
     "test": "npm run eslint && npm run rollup && echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@babel/polyfill": "^7.0.0",
     "canvas": "^1.6.12"
   },
   "devDependencies": {
