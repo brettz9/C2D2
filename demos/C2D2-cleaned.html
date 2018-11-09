@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
     <meta charset="utf-8" />
     <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
@@ -10,7 +10,7 @@
 <script type="module">
 import C2D2 from '../src/c2d2.js';
 
-const ctx = C2D2([1000, 450])
+/* const ctx = */ C2D2([1000, 450])
             .$shadow({color:'green', blur:2, offset:[5, 10]})
             .$line({color:'red', width:5, xy:[[75, 50], [100,75], [100,25]]})
             .$fill({color:'blue', xy:[[175, 150], [200,175], [200,125]]});
