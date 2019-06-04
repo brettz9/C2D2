@@ -29,7 +29,7 @@ For older browsers:
 
 ```html
 <!--[if lte IE 8]><script src="explorercanvas/excanvas.js"></script><![endif]-->
-<script src="node_modules/@babel/polyfill/dist/polyfill.js"></script>
+<script src="node_modules/core-js-bundle/minified.js"></script>
 <script src="node_modules/c2d2/dist/c2d2.js"></script>
 ```
 

@@ -1,5 +1,12 @@
 # C2D2 CHANGES
 
+## 0.5.0
+
+- Breaking change: Switch from now-deprecated `@babel/polyfill` to
+    `core-js-bundle` dep.; upgrade canvas dep.
+- npm: Switch from `opn-cli` to `open-cli`
+- npm: Update devDeps
+
 ## 0.4.0
 
 - Fix: Point to `dist` for `module`

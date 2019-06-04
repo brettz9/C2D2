@@ -212,8 +212,8 @@ function c2d2Element (arr, opts) {
     if (typeof opts === 'string') {
         el = d.getElementById(opts);
     } else if (typeof opts === 'object' && bNodeModule) {
-        const Canvas = require('canvas');
-        el = new Canvas();
+        const {createCanvas} = require('canvas');
+        el = createCanvas();
         const width = arr[0] || opts.width || opts.w;
         const height = arr[1] || opts.height || opts.h;
         if (width) {

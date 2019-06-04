@@ -1,8 +1,8 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
-  (global.C2D2 = factory());
-}(this, (function () { 'use strict';
+  (global = global || self, global.C2D2 = factory());
+}(this, function () { 'use strict';
 
   function _typeof(obj) {
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
@@ -308,9 +308,10 @@
     if (typeof opts === 'string') {
       el = d.getElementById(opts);
     } else if (_typeof(opts) === 'object' && bNodeModule) {
-      var Canvas = require('canvas');
+      var _require = require('canvas'),
+          createCanvas = _require.createCanvas;
 
-      el = new Canvas();
+      el = createCanvas();
       var width = arr[0] || opts.width || opts.w;
       var height = arr[1] || opts.height || opts.h;
 
@@ -761,4 +762,4 @@
 
   return C2D2Context;
 
-})));
+}));
