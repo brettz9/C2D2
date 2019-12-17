@@ -1,36 +1,51 @@
 {
   "name": "c2d2",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Light-weight wrapper for HTML5 Canvas, providing jQuery-style chaining in a light package",
   "main": "dist/c2d2.js",
   "module": "dist/c2d2-es.js",
   "scripts": {
-    "eslint": "eslint .",
+    "eslint": "eslint --ext=js,md,html .",
     "rollup": "rollup -c",
     "start": "open-cli http://127.0.0.1:8094/demos/C2D2-cleaned.html && static -p 8094",
     "test": "npm run eslint && npm run rollup && echo \"Error: no test specified\" && exit 1"
   },
+  "browserslist": [
+    "defaults"
+  ],
   "dependencies": {
-    "canvas": "^2.5.0",
-    "core-js-bundle": "^3.1.3"
+    "canvas": "^2.6.1",
+    "core-js-bundle": "^3.5.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.4.5",
-    "@babel/preset-env": "^7.4.5",
-    "eslint": "5.16.0",
-    "eslint-config-standard": "12.0.0",
-    "eslint-plugin-import": "2.17.3",
-    "eslint-plugin-node": "9.1.0",
-    "eslint-plugin-promise": "4.1.1",
-    "eslint-plugin-standard": "4.0.0",
+    "@babel/core": "^7.7.5",
+    "@babel/preset-env": "^7.7.6",
+    "@mysticatea/eslint-plugin": "^13.0.0",
+    "eslint": "^6.7.2",
+    "eslint-config-ash-nazg": "^13.1.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-array-func": "^3.1.3",
+    "eslint-plugin-compat": "^3.3.0",
+    "eslint-plugin-eslint-comments": "^3.1.2",
+    "eslint-plugin-html": "^6.0.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-jsdoc": "^18.4.3",
+    "eslint-plugin-markdown": "^1.0.1",
+    "eslint-plugin-no-use-extend-native": "^0.4.1",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-sonarjs": "^0.5.0",
+    "eslint-plugin-standard": "^4.0.1",
+    "eslint-plugin-unicorn": "^14.0.1",
     "node-static": "^0.7.11",
     "open-cli": "^5.0.0",
-    "rollup": "1.13.1",
-    "rollup-plugin-babel": "^4.3.2",
-    "rollup-plugin-terser": "^5.0.0"
+    "rollup": "1.27.13",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-terser": "^5.1.3",
+    "typescript": "^3.7.3"
   },
   "engines": {
-    "node": "x"
+    "node": ">=8.0.0"
   },
   "repository": {
     "type": "git",

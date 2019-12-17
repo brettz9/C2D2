@@ -12,33 +12,45 @@
 <!--[if lte IE 8]><script src="explorercanvas/excanvas.js"></script><![endif]-->
 <script src="../dist/c2d2.js"></script>
 <script>
-//var strokeStyle = C2D2(c).strokeStyle("rgb(50,110,210)").strokeStyle(); // Use property name as a function (but without arguments) to get the value
-//var ctx = C2D2('cnv'); // default is the first canvas element on the page, so can also be omitted if only one canvas is in use
+/* globals C2D2 */
+// Use property name as a function (but without arguments) to get the value
+// var strokeStyle = C2D2(c).strokeStyle("rgb(50,110,210)").strokeStyle();
+// default is the first canvas element on the page, so can also be omitted
+//  if only one canvas is in use
+// var ctx = C2D2('cnv');
 
-var ctx = C2D2([1000, 450]) // Could also be: {id:'cnv'} as 2nd arg  or {width: 1000, height: 550, id:'cnv', appendTo:document.body}, etc.
-            //.$lineColor('red').lineWidth(5).$shadow({color:'green', blur:2, offset:[5, 10]}).$line([75, 50], [100,75], [100,25])
-            .$shadow({color:'green', blur:2, offset:[5, 10]})
-            .$line({color:'red', width:5, xy:[[75, 50], [100,75], [100,25]]})
-            .$fill({color:'blue', xy:[[175, 150], [200,175], [200,125]]});
-            //.$lineColor('red').lineWidth(5).$shadow({color:'green', blur:2, offset:[5, 10]}).$line('75,50 100,75 100,25')
-            //.$fillColor('blue').$fill([175, 150], [200,175], [200,125]);
-            //.$fillColor('blue').$fill('175, 150 200,175 200,125');
+// Could also be: {id:'cnv'} as 2nd arg or
+// `{width: 1000, height: 550, id:'cnv', appendTo:document.body}`, etc.
+/* const ctx = */ C2D2([1000, 450])
+// .$lineColor('red').lineWidth(5)
+// .$shadow({color:'green', blur:2, offset:[5, 10]})
+// .$line([75, 50], [100,75], [100,25])
+  .$shadow({color: 'green', blur: 2, offset: [5, 10]})
+  .$line({color: 'red', width: 5, xy: [[75, 50], [100, 75], [100, 25]]})
+  .$fill({color: 'blue', xy: [[175, 150], [200, 175], [200, 125]]});
 
+// .$lineColor('red').lineWidth(5)
+// .$shadow({color:'green', blur:2, offset:[5, 10]})
+// .$line('75,50 100,75 100,25')
+// .$fillColor('blue').$fill([175, 150], [200,175], [200,125]);
+// .$fillColor('blue').$fill('175, 150 200,175 200,125');
 
-//setInterval(function () {
-//ctx.$clear()
-//setTimeout(function () {
-/*            ctx.$shadow({color:'green', blur:2, offset:[5, 10]})
-            .$line({color:'red', width:5, xy:[[75, 50], [100,75], [100,25]]})
-            .$fill({color:'blue', xy:[[175, 150], [200,175], [200,125]]});
-            */
-//}, 500);
-//}, 500);
+// setInterval(function () {
+// ctx.$clear()
+// setTimeout(function () {
+/*
+ctx.$shadow({color:'green', blur:2, offset:[5, 10]})
+  .$line({color:'red', width:5, xy:[[75, 50], [100,75], [100,25]]})
+  .$fill({color:'blue', xy:[[175, 150], [200,175], [200,125]]});
+*/
+// }, 500);
+// }, 500);
 
-
-//alert(ctx.toDataURL());
-//alert(ctx.$imageData(0, 0, 500, 500)); // no need for 'data' property; use regular getImageData if want width/height through this interface
-//ctx.shadowColor('green').shadowBlur(2).$shadowOffset(5, 10)
+// alert(ctx.toDataURL());
+// no need for 'data' property; use regular `getImageData` if
+//  want width/height through this interface
+// alert(ctx.$imageData(0, 0, 500, 500));
+// ctx.shadowColor('green').shadowBlur(2).$shadowOffset(5, 10)
 </script>
 
 <h1>Now you can easily let your users see 2d too with C2D2!</h1>

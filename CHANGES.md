@@ -1,5 +1,18 @@
 # C2D2 CHANGES
 
+## 0.6.0
+
+- Breaking change: Require Node >= 8
+- Breaking change: Now requires polyfills for `Node.append`,
+  `document.querySelector`, etc.
+- Fix: Return `this` consistently (and explicitly)
+- Linting (ESLint): Apply ash-nazg/sauron-node; ignore `node_modules`;
+    change rc file extension to a recommended one; lint HTML, Markdown
+- Maintenance: Add `.editorconfig`
+- Testing: Change test placeholder directory to `test`
+- npm: Add rollup to ignore file
+- npm: Update devDeps
+
 ## 0.5.0
 
 - Breaking change: Switch from now-deprecated `@babel/polyfill` to

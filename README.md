@@ -35,9 +35,10 @@ For older browsers:
 
 ```js
 // Available as a global
-C2D2([1000, 450]).$shadow({color:'green', blur:2, offset:[5, 10]})
-    .$line({color:'red', width:5, xy:[[75, 50], [100,75], [100,25]]})
-    .$fill({color:'blue', xy:[[175, 150], [200,175], [200,125]]});
+C2D2([1000, 450])
+  .$shadow({color: 'green', blur: 2, offset: [5, 10]})
+  .$line({color: 'red', width: 5, xy: [[75, 50], [100, 75], [100, 25]]})
+  .$fill({color: 'blue', xy: [[175, 150], [200, 175], [200, 125]]});
 ```
 
 ## Usage (Node)
