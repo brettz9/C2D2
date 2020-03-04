@@ -5,6 +5,8 @@
 }(this, (function () { 'use strict';
 
   function _typeof(obj) {
+    "@babel/helpers - typeof";
+
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
       _typeof = function (obj) {
         return typeof obj;
@@ -414,11 +416,6 @@
       if (opts.style) {
         // Better to use a class instead
         el.setAttribute('style', opts.style);
-      }
-
-      if (opts.innerHTML) {
-        // For fallback display
-        el.innerHTML = opts.innerHTML;
       }
 
       if (opts["class"] || opts.className) {

@@ -1,5 +1,13 @@
 # C2D2 CHANGES
 
+## 0.7.0
+
+- Breaking change: Remove `innerHTML` option as can trigger security
+  concerns; if needed, should set on element before passing in.
+- Breaking change: Change dep. core-js-bundle to a devDep.
+- npm: Fix and add to ignore file
+- npm: Update devDeps. (and add new required peerDeps)
+
 ## 0.6.0
 
 - Breaking change: Require Node >= 8

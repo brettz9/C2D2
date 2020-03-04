@@ -274,9 +274,6 @@ function c2d2Element (arr, opts) {
     if (opts.style) { // Better to use a class instead
       el.setAttribute('style', opts.style);
     }
-    if (opts.innerHTML) { // For fallback display
-      el.innerHTML = opts.innerHTML;
-    }
     if (opts.class || opts.className) {
       el.setAttribute('class', opts.class || opts.className);
     }
