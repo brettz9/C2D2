@@ -1,5 +1,10 @@
 # C2D2 CHANGES
 
+## ?
+
+- Build: Update per latest Rollup
+- npm: Update devDeps.
+
 ## 0.7.0
 
 - Breaking change: Remove `innerHTML` option as can trigger security
