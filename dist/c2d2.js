@@ -158,12 +158,12 @@
   var fs, createCanvas;
 
   if (typeof require !== 'undefined') {
-    /* eslint-disable global-require */
+    /* eslint-disable node/global-require */
     var _require = require('canvas');
 
     createCanvas = _require.createCanvas;
     fs = require('fs');
-    /* eslint-enable global-require */
+    /* eslint-enable node/global-require */
   } // Adds NodeJS support, and exports interface to modules
   //   that require this module
   // This should not be needed by Node

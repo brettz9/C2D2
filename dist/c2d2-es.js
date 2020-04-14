@@ -8,10 +8,10 @@
 
 let fs, createCanvas;
 if (typeof require !== 'undefined') {
-  /* eslint-disable global-require */
+  /* eslint-disable node/global-require */
   ({createCanvas} = require('canvas'));
   fs = require('fs');
-  /* eslint-enable global-require */
+  /* eslint-enable node/global-require */
 }
 
 // Adds NodeJS support, and exports interface to modules
