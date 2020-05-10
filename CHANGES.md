@@ -1,8 +1,12 @@
 # C2D2 CHANGES
 
-## ?
+## 0.8.0
 
-- Build: Update per latest Rollup
+- Build: Update per latest Babel/Rollup
+- Build: Use "json" extension with Babel RC
+- Linting: As per latest ash-nazg; check rc file
+- npm: Replace deprecated rollup-plugin-babel with rollup/plugin-babel
+    and make `babelHelpers` use explicit
 - npm: Update devDeps.
 
 ## 0.7.0

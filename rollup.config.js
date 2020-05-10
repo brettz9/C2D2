@@ -1,4 +1,4 @@
-import babel from 'rollup-plugin-babel';
+import babel from '@rollup/plugin-babel';
 import {terser} from 'rollup-plugin-terser';
 
 /**
@@ -9,7 +9,7 @@ import {terser} from 'rollup-plugin-terser';
 
 /**
  * @param {PlainObject} [config={}]
- * @param {boolean} [config.minifying=false] Whether to minify output
+ * @param {boolean} [config.minify=false] Whether to minify output
  * @param {string} [config.format='umd'] Rollup output format
  * @returns {external:RollupConfig} Individual Rollup config object
  */
@@ -26,7 +26,9 @@ function rollupConfig ({minify = false, format = 'umd'}) {
     plugins: []
   };
   if (format === 'umd') {
-    config.plugins.push(babel());
+    config.plugins.push(babel({
+      babelHelpers: 'bundled'
+    }));
   }
   if (minify) {
     config.plugins.push(terser());
@@ -48,6 +50,8 @@ export default [
             format: 'umd',
             name: 'C2D2'
         },
-        plugins: [babel()]
+        plugins: [babel({
+          babelHelpers: 'bundled'
+        })]
     } */
 ];
