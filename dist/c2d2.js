@@ -1,7 +1,7 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
-  (global = global || self, global.C2D2 = factory());
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.C2D2 = factory());
 }(this, (function () { 'use strict';
 
   function _typeof(obj) {
@@ -92,9 +92,12 @@
     throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
-  function _createForOfIteratorHelper(o) {
+  function _createForOfIteratorHelper(o, allowArrayLike) {
+    var it;
+
     if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) {
-      if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) {
+      if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
+        if (it) o = it;
         var i = 0;
 
         var F = function () {};
@@ -120,8 +123,7 @@
       throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
     }
 
-    var it,
-        normalCompletion = true,
+    var normalCompletion = true,
         didErr = false,
         err;
     return {
@@ -147,7 +149,7 @@
     };
   }
 
-  /* globals require */
+  /* globals require -- Polyglot file for now */
 
   /**
   * @todo Resume ensuring properties/methods are added and any todos noted
@@ -158,12 +160,12 @@
   var fs, createCanvas;
 
   if (typeof require !== 'undefined') {
-    /* eslint-disable node/global-require */
+    /* eslint-disable node/global-require -- Polyglot file for now */
     var _require = require('canvas');
 
     createCanvas = _require.createCanvas;
     fs = require('fs');
-    /* eslint-enable node/global-require */
+    /* eslint-enable node/global-require -- Polyglot file for now */
   } // Adds NodeJS support, and exports interface to modules
   //   that require this module
   // This should not be needed by Node
@@ -495,7 +497,7 @@
 
 
   function C2D2Context(arr, opts) {
-    // eslint-disable-next-line no-restricted-syntax
+    // eslint-disable-next-line no-restricted-syntax -- Support old API
     if (!(this instanceof C2D2Context)) {
       return new C2D2Context(arr, opts);
     }
@@ -927,21 +929,21 @@
     }
   });
 
-  C2D2Context.randomNumber = function (min, max) {
-    min = min || 0;
-    max = max || 1;
+  C2D2Context.randomNumber = function () {
+    var min = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+    var max = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }; // See also the individual methods which use this (allowing
   //  "random" as a "color" argument)
 
 
-  C2D2Context.randomColor = function (r, g, b, rmax, gmax, bmax) {
-    r = r || 0;
-    g = g || 0;
-    b = b || 0;
-    rmax = rmax || 255;
-    gmax = gmax || 255;
-    bmax = bmax || 255;
+  C2D2Context.randomColor = function () {
+    var r = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+    var g = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    var b = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+    var rmax = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 255;
+    var gmax = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 255;
+    var bmax = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 255;
     var red = C2D2Context.randomNumber(r, rmax),
         green = C2D2Context.randomNumber(g, gmax),
         blue = C2D2Context.randomNumber(b, bmax);

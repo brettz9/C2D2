@@ -10,7 +10,7 @@ import {terser} from 'rollup-plugin-terser';
 /**
  * @param {PlainObject} [config={}]
  * @param {boolean} [config.minify=false] Whether to minify output
- * @param {string} [config.format='umd'] Rollup output format
+ * @param {string} [config.format="umd"] Rollup output format
  * @returns {external:RollupConfig} Individual Rollup config object
  */
 function rollupConfig ({minify = false, format = 'umd'}) {
@@ -37,7 +37,7 @@ function rollupConfig ({minify = false, format = 'umd'}) {
   return config;
 }
 
-// eslint-disable-next-line import/no-anonymous-default-export
+// eslint-disable-next-line import/no-anonymous-default-export -- Rollup config
 export default [
   rollupConfig({minify: false, format: 'umd'}),
   rollupConfig({minify: true, format: 'umd'}),

@@ -1,5 +1,12 @@
 # C2D2 CHANGES
 
+## ?
+
+- Build: Update build per latest Rollup/Babel and linting
+- Linting: As per latest ash-nazg
+- pnpm: Add lock
+- npm: Update devDeps.
+
 ## 0.8.0
 
 - Build: Update per latest Babel/Rollup

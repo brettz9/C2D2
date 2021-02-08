@@ -1,4 +1,4 @@
-/* globals require */
+/* globals require -- Polyglot file for now */
 /**
 * @todo Resume ensuring properties/methods are added and any todos noted
 * for potential to accept specific arguments as wrapped objects or
@@ -8,10 +8,10 @@
 
 let fs, createCanvas;
 if (typeof require !== 'undefined') {
-  /* eslint-disable node/global-require */
+  /* eslint-disable node/global-require -- Polyglot file for now */
   ({createCanvas} = require('canvas'));
   fs = require('fs');
-  /* eslint-enable node/global-require */
+  /* eslint-enable node/global-require -- Polyglot file for now */
 }
 
 // Adds NodeJS support, and exports interface to modules
@@ -315,7 +315,7 @@ function c2d2Element (arr, opts) {
 * @param {PlainObject} opts
 */
 function C2D2Context (arr, opts) {
-  // eslint-disable-next-line no-restricted-syntax
+  // eslint-disable-next-line no-restricted-syntax -- Support old API
   if (!(this instanceof C2D2Context)) {
     return new C2D2Context(arr, opts);
   }
@@ -567,21 +567,15 @@ C2D2Context.extend({ // Don't auto-return 'this' object for these
   }
 });
 
-C2D2Context.randomNumber = function (min, max) {
-  min = min || 0;
-  max = max || 1;
+C2D2Context.randomNumber = function (min = 0, max = 1) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
 // See also the individual methods which use this (allowing
 //  "random" as a "color" argument)
-C2D2Context.randomColor = function (r, g, b, rmax, gmax, bmax) {
-  r = r || 0;
-  g = g || 0;
-  b = b || 0;
-  rmax = rmax || 255;
-  gmax = gmax || 255;
-  bmax = bmax || 255;
+C2D2Context.randomColor = function (
+  r = 0, g = 0, b = 0, rmax = 255, gmax = 255, bmax = 255
+) {
   const red = C2D2Context.randomNumber(r, rmax),
     green = C2D2Context.randomNumber(g, gmax),
     blue = C2D2Context.randomNumber(b, bmax);
