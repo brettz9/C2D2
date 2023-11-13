@@ -1,4 +1,7 @@
-/* globals require -- Polyglot file for now */
+import fs from 'fs';
+import { JSDOM } from 'jsdom';
+import { createCanvas } from 'canvas';
+
 /**
 * @todo Resume ensuring properties/methods are added and any todos noted
 * for potential to accept specific arguments as wrapped objects or
@@ -6,18 +9,10 @@
 * @todo Add tests, including for browser and Node
 */
 
-let fs, createCanvas;
-if (typeof require !== 'undefined') {
-  /* eslint-disable node/global-require -- Polyglot file for now */
-  ({createCanvas} = require('canvas'));
-  fs = require('fs');
-  /* eslint-enable node/global-require -- Polyglot file for now */
-}
-
 // Adds NodeJS support, and exports interface to modules
 //   that require this module
 // This should not be needed by Node
-const win = typeof window === 'undefined' ? global : window;
+let win$1;
 
 function buildMethod (m) {
   return function (...args) {
@@ -71,15 +66,14 @@ const DelegateChain = {
   },
   addGetterMethods (getterMethods, clss, WrapperClass, methodFromProperty) {
     for (const getterMethod of getterMethods) {
-      if (WrapperClass) {
-        clss.prototype[getterMethod] = buildGetterMethod(
+      clss.prototype[getterMethod] = WrapperClass
+        ? buildGetterMethod(
           getterMethod, methodFromProperty, WrapperClass
-        );
-      } else { // For those which return a literal
-        clss.prototype[getterMethod] = buildLiteralGetterMethod(
+        )
+        // For those which return a literal
+        : buildLiteralGetterMethod(
           getterMethod
         );
-      }
     }
   },
   addPropertyMethods (props, clss) {
@@ -222,7 +216,7 @@ function _C2D2ContextSetup () {
 
 function c2d2Element (arr, opts) {
   let el = opts;
-  const d = win.document || null;
+  const d = win$1.document || null;
   const noArray = typeof arr !== 'object' || !arr.length;
 
   if (noArray) {
@@ -238,25 +232,11 @@ function c2d2Element (arr, opts) {
   if (typeof opts === 'string') {
     el = d.querySelector('#' + opts);
   } else if (typeof opts === 'object' && bNodeModule) {
-    el = createCanvas();
     const width = arr[0] || opts.width || opts.w;
     const height = arr[1] || opts.height || opts.h;
-    if (width) {
-      el.width = width;
-    }
-    if (height) {
-      el.height = height;
-    }
     const path = opts.fileStream || opts.path;
     if (path) {
-      const out = fs.createWriteStream(path);
-      const stream = el.createPNGStream();
-      stream.on('data', (chunk) => {
-        out.write(chunk);
-      });
-      stream.on('end', () => {
-        out.end();
-      });
+      writeToDisk$1({path, width, height});
     }
   } else if (typeof opts === 'object' && !opts.nodeName) {
     el = (d.createElementNS && d.documentElement.namespaceURI !== null)
@@ -294,8 +274,8 @@ function c2d2Element (arr, opts) {
     parent.append(el);
   }
 
-  if (win.G_vmlCanvasManager) { // If using ExplorerCanvas to get IE support: http://code.google.com/p/explorercanvas/
-    el = win.G_vmlCanvasManager.initElement(el);
+  if (win$1.G_vmlCanvasManager) { // If using ExplorerCanvas to get IE support: http://code.google.com/p/explorercanvas/
+    el = win$1.G_vmlCanvasManager.initElement(el);
   }
   return el;
 }
@@ -330,7 +310,6 @@ function C2D2Context (arr, opts) {
   //  `Object.defineProperty` to ensure stayed in sync)
   this.width = el.width;
   this.height = el.height;
-  return this; // Satisfy Netbeans
 }
 
 // Expose the c2d2Element methods
@@ -593,7 +572,7 @@ function _getPropertyFromStyleSheet (ss, selectorText, propertyName) {
       }
     } catch (err) { // IE
       if (rule.selectorText === selectorText) {
-        propertyName = propertyName.replace(/-[a-z]/gu, String.prototype.toUpperCase);
+        propertyName = propertyName.replaceAll(/-[a-z]/gu, String.prototype.toUpperCase);
         return rule.style[propertyName];
       }
     }
@@ -634,4 +613,42 @@ C2D2Context.Gradient = C2D2Gradient;
 C2D2Context.Pattern = C2D2Pattern;
 C2D2Context.canvasElement = c2d2Element;
 
-export default C2D2Context;
+let writeToDisk$1;
+C2D2Context.setWriteToDisk = (w2d) => {
+  writeToDisk$1 = w2d;
+};
+C2D2Context.setWindow = (w) => {
+  win$1 = w;
+};
+
+const {window: win} = new JSDOM();
+
+/**
+ * @param {object} cfg
+ * @param {string} cfg.path
+ * @param {number} cfg.width
+ * @param {number} cfg.height
+ * @returns {void}
+ */
+function writeToDisk ({path, width, height}) {
+  const el = createCanvas();
+  if (width) {
+    el.width = width;
+  }
+  if (height) {
+    el.height = height;
+  }
+  const out = fs.createWriteStream(path);
+  const stream = el.createPNGStream();
+  stream.on('data', (chunk) => {
+    out.write(chunk);
+  });
+  stream.on('end', () => {
+    out.end();
+  });
+}
+
+C2D2Context.setWriteToDisk(writeToDisk);
+C2D2Context.setWindow(win);
+
+export { C2D2Context as default };

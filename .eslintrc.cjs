@@ -1,10 +1,7 @@
 'use strict';
 
 module.exports = {
-  extends: ['ash-nazg/sauron-node'],
-  parserOptions: {
-    sourceType: 'module'
-  },
+  extends: ['ash-nazg/sauron-node-overrides'],
   env: {
     node: true,
     browser: true
@@ -16,26 +13,17 @@ module.exports = {
   },
   overrides: [
     {
-      files: '.eslintrc.js',
-      extends: [
-        'plugin:node/recommended-script'
-      ],
-      rules: {
-        'import/no-commonjs': 0
-      }
-    },
-    {
-      files: ['*.md'],
+      files: ['*.md/*.js'],
       globals: {
         require: false,
-        C2D2: true
+        c2d2: true
       },
       rules: {
         'import/unambiguous': 0,
         'import/no-commonjs': 0,
-        'no-unused-vars': ['error', {varsIgnorePattern: 'C2D2'}],
-        'node/no-missing-require': ['error', {allowModules: ['c2d2']}],
-        'no-shadow': ['error', {allow: ['C2D2']}]
+        'n/no-missing-require': ['error', {allowModules: ['c2d2']}],
+        'no-unused-vars': ['error', {varsIgnorePattern: 'c2d2'}],
+        'no-shadow': ['error', {allow: ['c2d2']}]
       }
     },
     {

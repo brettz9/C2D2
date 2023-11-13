@@ -1,5 +1,8 @@
-import babel from '@rollup/plugin-babel';
-import {terser} from 'rollup-plugin-terser';
+import {babel} from '@rollup/plugin-babel';
+
+// eslint-disable-next-line @stylistic/max-len -- Long
+// eslint-disable-next-line import/no-deprecated, import/namespace, import/default, import/no-named-as-default-member, import/no-named-as-default -- Ok
+import terser from '@rollup/plugin-terser';
 
 /**
  * @external RollupConfig
@@ -8,20 +11,22 @@ import {terser} from 'rollup-plugin-terser';
  */
 
 /**
- * @param {PlainObject} [config={}]
- * @param {boolean} [config.minify=false] Whether to minify output
- * @param {string} [config.format="umd"] Rollup output format
- * @returns {external:RollupConfig} Individual Rollup config object
+ * @param {object} [config]
+ * @param {boolean} [config.minify] Whether to minify output
+ * @param {string} [config.format] Rollup output format
+ * @param {"browser"|"node"} [config.env]
+ * @returns {RollupConfig} Individual Rollup config object
  */
-function rollupConfig ({minify = false, format = 'umd'}) {
+function rollupConfig ({env, minify = false, format = 'umd'}) {
   const config = {
-    input: 'src/c2d2.js',
+    external: ['fs', 'canvas', 'jsdom'],
+    input: `src/c2d2-${env}.js`,
     output: {
-      file: `dist/c2d2${
+      file: `dist/c2d2-${env}${
         format === 'es' ? '-es' : ''
       }${minify ? '.min' : ''}.js`,
       format,
-      name: 'C2D2'
+      name: 'c2d2'
     },
     plugins: []
   };
@@ -37,18 +42,17 @@ function rollupConfig ({minify = false, format = 'umd'}) {
   return config;
 }
 
-// eslint-disable-next-line import/no-anonymous-default-export -- Rollup config
 export default [
-  rollupConfig({minify: false, format: 'umd'}),
-  rollupConfig({minify: true, format: 'umd'}),
-  rollupConfig({minify: false, format: 'es'}),
-  rollupConfig({minify: true, format: 'es'}) /* ,
+  rollupConfig({minify: false, format: 'cjs', env: 'node'}),
+  rollupConfig({minify: true, format: 'umd', env: 'browser'}),
+  rollupConfig({minify: false, format: 'es', env: 'node'}),
+  rollupConfig({minify: true, format: 'es', env: 'browser'}) /* ,
     {
         input: 'test/tests.js',
         output: {
             file: `test/tests-compiled.js`,
             format: 'umd',
-            name: 'C2D2'
+            name: 'c2d2'
         },
         plugins: [babel({
           babelHelpers: 'bundled'

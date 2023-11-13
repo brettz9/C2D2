@@ -1,3 +1,9 @@
+'use strict';
+
+var fs = require('fs');
+var jsdom = require('jsdom');
+var canvas = require('canvas');
+
 /**
 * @todo Resume ensuring properties/methods are added and any todos noted
 * for potential to accept specific arguments as wrapped objects or
@@ -8,7 +14,7 @@
 // Adds NodeJS support, and exports interface to modules
 //   that require this module
 // This should not be needed by Node
-let win;
+let win$1;
 
 function buildMethod (m) {
   return function (...args) {
@@ -212,7 +218,7 @@ function _C2D2ContextSetup () {
 
 function c2d2Element (arr, opts) {
   let el = opts;
-  const d = win.document || null;
+  const d = win$1.document || null;
   const noArray = typeof arr !== 'object' || !arr.length;
 
   if (noArray) {
@@ -232,7 +238,7 @@ function c2d2Element (arr, opts) {
     const height = arr[1] || opts.height || opts.h;
     const path = opts.fileStream || opts.path;
     if (path) {
-      writeToDisk({path, width, height});
+      writeToDisk$1({path, width, height});
     }
   } else if (typeof opts === 'object' && !opts.nodeName) {
     el = (d.createElementNS && d.documentElement.namespaceURI !== null)
@@ -270,8 +276,8 @@ function c2d2Element (arr, opts) {
     parent.append(el);
   }
 
-  if (win.G_vmlCanvasManager) { // If using ExplorerCanvas to get IE support: http://code.google.com/p/explorercanvas/
-    el = win.G_vmlCanvasManager.initElement(el);
+  if (win$1.G_vmlCanvasManager) { // If using ExplorerCanvas to get IE support: http://code.google.com/p/explorercanvas/
+    el = win$1.G_vmlCanvasManager.initElement(el);
   }
   return el;
 }
@@ -609,12 +615,42 @@ C2D2Context.Gradient = C2D2Gradient;
 C2D2Context.Pattern = C2D2Pattern;
 C2D2Context.canvasElement = c2d2Element;
 
-let writeToDisk;
+let writeToDisk$1;
 C2D2Context.setWriteToDisk = (w2d) => {
-  writeToDisk = w2d;
+  writeToDisk$1 = w2d;
 };
 C2D2Context.setWindow = (w) => {
-  win = w;
+  win$1 = w;
 };
 
-export default C2D2Context;
+const {window: win} = new jsdom.JSDOM();
+
+/**
+ * @param {object} cfg
+ * @param {string} cfg.path
+ * @param {number} cfg.width
+ * @param {number} cfg.height
+ * @returns {void}
+ */
+function writeToDisk ({path, width, height}) {
+  const el = canvas.createCanvas();
+  if (width) {
+    el.width = width;
+  }
+  if (height) {
+    el.height = height;
+  }
+  const out = fs.createWriteStream(path);
+  const stream = el.createPNGStream();
+  stream.on('data', (chunk) => {
+    out.write(chunk);
+  });
+  stream.on('end', () => {
+    out.end();
+  });
+}
+
+C2D2Context.setWriteToDisk(writeToDisk);
+C2D2Context.setWindow(win);
+
+module.exports = C2D2Context;

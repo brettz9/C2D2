@@ -1,11 +1,16 @@
-# C2D2 CHANGES
+# c2d2 CHANGES
 
-## ?
+## 0.9.0
 
+- Breaking change: Require Node 18+
+- Breaking change: Use `c2d2` as global over `C2D2` and add browser/node
+   into file names
+- feat: use true ESM module
+- feat: install jsdom by default
 - Build: Update build per latest Rollup/Babel and linting
 - Linting: As per latest ash-nazg
 - pnpm: Add lock
-- npm: Update devDeps.
+- npm: Update canvas, devDeps.
 
 ## 0.8.0
 
