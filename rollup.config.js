@@ -1,12 +1,12 @@
 import {babel} from '@rollup/plugin-babel';
 
 // eslint-disable-next-line @stylistic/max-len -- Long
-// eslint-disable-next-line import/no-deprecated, import/namespace, import/default, import/no-named-as-default-member, import/no-named-as-default -- Ok
+// // eslint-disable-next-line import/no-deprecated, import/namespace, import/default, import/no-named-as-default-member, import/no-named-as-default -- Ok
 import terser from '@rollup/plugin-terser';
 
 /**
  * @external RollupConfig
- * @type {PlainObject}
+ * @type {object}
  * @see {@link https://rollupjs.org/guide/en#big-list-of-options}
  */
 

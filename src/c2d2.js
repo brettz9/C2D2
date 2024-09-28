@@ -277,7 +277,7 @@ function c2d2Element (arr, opts) {
 }
 
 /**
-* @typedef {PlainObject} WidthHeight
+* @typedef {object} WidthHeight
 * @property {Float} 0
 * @property {Float} 1
 */
@@ -288,7 +288,7 @@ function c2d2Element (arr, opts) {
 * @todo Could make generic CanvasContext to accept "type" as a
 *  property when not '2d'
 * @param {WidthHeight} arr
-* @param {PlainObject} opts
+* @param {object} opts
 */
 function C2D2Context (arr, opts) {
   // eslint-disable-next-line no-restricted-syntax -- Support old API
@@ -543,6 +543,7 @@ C2D2Context.extend({ // Don't auto-return 'this' object for these
 });
 
 C2D2Context.randomNumber = function (min = 0, max = 1) {
+  // eslint-disable-next-line sonarjs/pseudo-random -- Ok
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
@@ -566,6 +567,7 @@ function _getPropertyFromStyleSheet (ss, selectorText, propertyName) {
                 rule.selectorText === selectorText) {
         return rule.style.getPropertyValue(propertyName);
       }
+    // eslint-disable-next-line no-unused-vars -- Ok
     } catch (err) { // IE
       if (rule.selectorText === selectorText) {
         propertyName = propertyName.replaceAll(/-[a-z]/gu, String.prototype.toUpperCase);

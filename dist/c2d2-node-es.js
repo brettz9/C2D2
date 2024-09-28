@@ -281,7 +281,7 @@ function c2d2Element (arr, opts) {
 }
 
 /**
-* @typedef {PlainObject} WidthHeight
+* @typedef {object} WidthHeight
 * @property {Float} 0
 * @property {Float} 1
 */
@@ -292,7 +292,7 @@ function c2d2Element (arr, opts) {
 * @todo Could make generic CanvasContext to accept "type" as a
 *  property when not '2d'
 * @param {WidthHeight} arr
-* @param {PlainObject} opts
+* @param {object} opts
 */
 function C2D2Context (arr, opts) {
   // eslint-disable-next-line no-restricted-syntax -- Support old API
