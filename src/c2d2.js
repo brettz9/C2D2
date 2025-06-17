@@ -567,7 +567,6 @@ function _getPropertyFromStyleSheet (ss, selectorText, propertyName) {
                 rule.selectorText === selectorText) {
         return rule.style.getPropertyValue(propertyName);
       }
-    // eslint-disable-next-line no-unused-vars -- Ok
     } catch (err) { // IE
       if (rule.selectorText === selectorText) {
         propertyName = propertyName.replaceAll(/-[a-z]/gu, String.prototype.toUpperCase);

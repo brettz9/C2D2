@@ -1,5 +1,9 @@
 # c2d2 CHANGES
 
+## ?
+
+- chore: update canvas, jsdom, devDeps.
+
 ## 0.9.0
 
 - Breaking change: Require Node 18+

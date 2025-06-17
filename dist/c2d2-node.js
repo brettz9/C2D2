@@ -549,6 +549,7 @@ C2D2Context.extend({ // Don't auto-return 'this' object for these
 });
 
 C2D2Context.randomNumber = function (min = 0, max = 1) {
+  // eslint-disable-next-line sonarjs/pseudo-random -- Ok
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 

@@ -1,0 +1,6 @@
+ignoredBuiltDependencies:
+  - core-js-bundle
+  - unrs-resolver
+
+onlyBuiltDependencies:
+  - canvas
