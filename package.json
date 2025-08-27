@@ -42,18 +42,18 @@
   },
   "homepage": "https://github.com/brettz9/C2D2#readme",
   "dependencies": {
-    "canvas": "^3.1.2",
+    "canvas": "^3.2.0",
     "jsdom": "^26.1.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.27.7",
-    "@babel/preset-env": "^7.27.2",
+    "@babel/core": "^7.28.3",
+    "@babel/preset-env": "^7.28.3",
     "@brettz9/node-static": "^0.1.1",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-terser": "^0.4.4",
-    "eslint": "^9.30.0",
-    "eslint-config-ash-nazg": "^38.0.2",
+    "eslint": "^9.34.0",
+    "eslint-config-ash-nazg": "^39.0.1",
     "open-cli": "^8.0.0",
-    "rollup": "4.44.1"
+    "rollup": "4.49.0"
   }
 }
