@@ -54,6 +54,6 @@
     "eslint": "^9.34.0",
     "eslint-config-ash-nazg": "^39.0.1",
     "open-cli": "^8.0.0",
-    "rollup": "4.49.0"
+    "rollup": "4.59.0"
   }
 }
